@@ -16,7 +16,8 @@
     "all": "すべて",
     "prev": "前へ",
     "next": "次へ",
-    "navStory": "漫画"
+    "navStory": "漫画",
+    "navGame": "ゲーム"
   },
   "home": {
     "pageTitle": "Temu3 Code · テレメトリなし、証拠だけ",
@@ -326,7 +327,8 @@
         "desc": "大手テックVIP20人への罵倒0.0%、一般開発者へ8.0%、危機時14.4%。集計方法も掲載。"
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · テレメトリなし、証拠だけ",

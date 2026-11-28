@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Temu3 Kingdom | 2D Satirical Tower Defense</title>
+  <meta name="description" content="A 2D hand-drawn satirical tower defense game. Escort Big-Tech VIPs, block open-source auditors, and trigger 'Steal Telemetry' behind a 'No Telemetry' sign. CC0 Parody. Zero tracking." />
+  <meta name="theme-color" content="#14181f" />
+  <link rel="canonical" href="https://temu3code.com/game/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Temu3 Code" />
+  <meta property="og:url" content="https://temu3code.com/game/" />
+  <meta property="og:title" content="Temu3 Kingdom | 2D Satirical Tower Defense" />
+  <meta property="og:description" content="A 2D hand-drawn satirical tower defense game. Escort Big-Tech VIPs, block open-source auditors, and unleash Data × PR combos behind a 'No Telemetry' sign across 3 campaign stages & Endless Audit. CC0 Parody. Zero tracking." />
+  <meta property="og:image" content="https://temu3code.com/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Temu3 Kingdom | 2D Satirical Tower Defense" />
+  <meta name="twitter:description" content="Escort Big-Tech VIPs, block open-source auditors, and trigger 'Steal Telemetry' behind a 'No Telemetry' sign. 3-stage satirical tower defense. CC0 Parody. Zero tracking." />
+  <meta name="twitter:image" content="https://temu3code.com/og-card.png" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='3' y='3' width='58' height='58' rx='12' fill='none' stroke='%23facc15' stroke-opacity='0.45' stroke-width='2'/%3E%3Cpath d='M16 50V22h6v6h6v-6h8v6h6v-6h6v28H16z' fill='%231e293b' stroke='%23facc15' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M26 50V39a6 6 0 0 1 12 0v11' fill='%230f172a' stroke='%23fde047' stroke-width='3'/%3E%3Ccircle cx='32' cy='15' r='3.5' fill='%23c084fc'/%3E%3C/svg%3E" />
+  <script type="module" crossorigin src="./assets/index-DHMLJ2uO.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-xc3B3aQ5.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Dismissible Portrait Orientation Hint (shown only on portrait screens) -->
+    <div id="portrait-tip" class="portrait-tip" role="note">
+      <span class="portrait-tip-ico ico-gold" data-icon="smartphone" data-icon-size="14"></span>
+      <span id="portrait-tip-text" data-i18n="ui.portraitTip">Rotate for landscape</span>
+      <button id="btn-dismiss-portrait" class="portrait-tip-close" type="button" aria-label="Dismiss" data-icon="x" data-icon-size="12" data-icon-stroke="2.5"></button>
+    </div>
+
+    <div id="stage-wrap" dir="ltr">
+      <canvas id="game-canvas" dir="ltr" width="1280" height="720"></canvas>
+
+      <!-- Top HUD -->
+      <header id="hud-top">
+        <div class="hud-group hud-stats">
+          <div class="pill pill-hp" id="stat-hp-wrap" title="Castle Reputation">
+            <span class="pill-ico ico-crimson" data-icon="shield" data-icon-size="15"></span>
+            <span id="stat-hp">20</span>
+          </div>
+          <div class="pill pill-gold" id="stat-gold-wrap" title="Valuation Gold">
+            <span class="pill-ico ico-gold" data-icon="coins" data-icon-size="15"></span>
+            <span id="stat-gold">260</span>
+          </div>
+          <div class="pill pill-wave" id="stat-wave-wrap" title="Wave">
+            <span class="pill-ico ico-cyan" data-icon="swords" data-icon-size="15"></span>
+            <span id="stat-wave">0 / 10</span>
+          </div>
+        </div>
+
+        <div class="hud-center">
+          <div class="hud-alarm" id="alarm-wrap">
+            <div class="alarm-head">
+              <span id="alarm-label">Leak Alarm</span>
+              <span id="alarm-pct">0%</span>
+            </div>
+            <div class="alarm-bar">
+              <div class="alarm-fill" id="alarm-fill"></div>
+            </div>
+          </div>
+          <div class="hud-policies hidden" id="hud-policies" aria-label="Active Boardroom Policies"></div>
+        </div>
+
+        <div class="hud-group hud-controls">
+          <button class="ctrl-btn" id="btn-speed" type="button" title="Speed 1x/2x/3x [F]" aria-label="Cycle Speed">1x</button>
+          <button class="ctrl-btn" id="btn-pause" type="button" title="Pause [Space]" aria-label="Pause" data-icon="pause" data-icon-size="15"></button>
+          <button class="ctrl-btn ctrl-restart" id="btn-restart" type="button" title="Restart Stage [R]" aria-label="Restart Stage" disabled data-icon="rotateCcw" data-icon-size="15"></button>
+          <button class="ctrl-btn ctrl-music" id="btn-music" type="button" title="Music" aria-label="Toggle Music" data-icon="music" data-icon-size="15"></button>
+          <button class="ctrl-btn" id="btn-mute" type="button" title="Audio [M]" aria-label="Toggle Sound" data-icon="volume2" data-icon-size="15"></button>
+          <label class="ctrl-lang-wrap" id="hud-lang-wrap" title="Language">
+            <span class="ctrl-lang-ico" data-icon="globe" data-icon-size="14"></span>
+            <span class="ctrl-lang-code" id="hud-lang-code">EN</span>
+            <select class="ctrl-lang-select" id="select-lang-hud" aria-label="Language"></select>
+          </label>
+          <button class="ctrl-btn" id="btn-help" type="button" title="Guide" aria-label="Quick Guide" data-icon="helpCircle" data-icon-size="16"></button>
+        </div>
+      </header>
+
+      <!-- Center Toast / Banner -->
+      <div id="banner-toast" class="hidden" role="status" aria-live="polite"></div>
+
+      <!-- Achievement Unlocked Golden Toast -->
+      <div id="achievement-toast" class="hidden" role="status" aria-live="polite">
+        <div class="ach-toast-medal" id="ach-toast-icon" data-icon="trophy" data-icon-size="22"></div>
+        <div class="ach-toast-body">
+          <div class="ach-toast-kicker" id="ach-toast-kicker"></div>
+          <div class="ach-toast-title" id="ach-toast-title"></div>
+          <div class="ach-toast-desc" id="ach-toast-desc"></div>
+        </div>
+      </div>
+
+      <!-- Radial Tower Menu (positioned dynamically with viewport edge-clamping) -->
+      <div id="radial-menu" class="hidden"></div>
+
+      <!-- Rich Selection / Hover Inspector Card -->
+      <div id="inspector-card" class="hidden"></div>
+
+      <!-- Bottom HUD: Hero Pill + Skills Bar + Wave Preview & Call -->
+      <footer id="hud-bottom">
+        <div class="hud-bottom-left">
+          <button class="hero-pill" id="hero-pill" type="button" title="Lord Theo">
+            <div class="hero-avatar-wrap">
+              <img id="hero-avatar" src="./assets/hero-rage.webp" alt="Lord Theo" draggable="false" />
+              <span class="hero-lv-badge" id="hero-lv">Lv.1</span>
+              <span class="hero-respawn-overlay hidden" id="hero-respawn-overlay"></span>
+            </div>
+            <div class="hero-meta">
+              <div class="hero-meta-top">
+                <span class="hero-name">Theo</span>
+                <span class="hero-stance stance-idle" id="hero-stance">Ready</span>
+              </div>
+              <div class="hero-hp-bar" aria-label="Hero HP">
+                <div class="hero-hp-fill" id="hero-hp-fill"></div>
+              </div>
+              <div class="hero-xp-bar" aria-label="Hero XP">
+                <div class="hero-xp-fill" id="hero-xp-fill"></div>
+              </div>
+            </div>
+          </button>
+
+          <div class="skills-bar">
+            <button class="skill-btn skill-steal" id="skill-steal" type="button">
+              <span class="skill-key">1</span>
+              <span class="skill-ico ico-purple" data-icon="database" data-icon-size="18"></span>
+              <span class="skill-name" data-i18n="skill.steal">Steal Data</span>
+              <span class="skill-cd" id="cd-steal"></span>
+            </button>
+            <button class="skill-btn skill-rug" id="skill-rug" type="button">
+              <span class="skill-key">2</span>
+              <span class="skill-ico ico-amber" data-icon="eraser" data-icon-size="18"></span>
+              <span class="skill-name" data-i18n="skill.rug">Fake Delete</span>
+              <span class="skill-cd" id="cd-rug"></span>
+            </button>
+            <button class="skill-btn skill-delete" id="skill-delete" type="button">
+              <span class="skill-key">3</span>
+              <span class="skill-ico ico-crimson" data-icon="flame" data-icon-size="18"></span>
+              <span class="skill-name" data-i18n="skill.delete">4AM Delete</span>
+              <span class="skill-cd" id="cd-delete"></span>
+            </button>
+            <div class="skill-divider"></div>
+            <button class="skill-btn skill-hero" id="skill-hero" type="button">
+              <span class="skill-key">4</span>
+              <span class="skill-ico ico-cyan" data-icon="sun" data-icon-size="18"></span>
+              <span class="skill-name" data-i18n="skill.apology">Ring Apology</span>
+              <span class="skill-cd" id="cd-hero"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="wave-call-wrap hidden" id="wave-call-wrap">
+          <div class="wave-preview-tooltip hidden" id="wave-preview-tooltip"></div>
+          <div class="wave-preview-pill" id="wave-preview-pill" tabindex="0"></div>
+          <button class="wave-call-btn" id="btn-call-wave" type="button">
+            <span class="wave-call-ico" data-icon="megaphone" data-icon-size="15"></span>
+            <span id="wave-call-text">Start W1</span>
+            <span class="wave-call-key">N</span>
+          </button>
+        </div>
+      </footer>
+
+      <!-- Targeting Hint -->
+      <div id="targeting-hint" class="hidden"></div>
+
+      <!-- Title Overlay (unhidden after initial locale loads cleanly) -->
+      <div id="overlay-title" class="overlay hidden">
+        <div class="modal-card title-card">
+          <div class="parody-badge" data-i18n="title.badge">CC0 Satire Tower Defense · Zero Telemetry</div>
+          <h1 class="game-title">
+            <span class="title-main" data-i18n="title.name">Temu3 Kingdom</span>
+          </h1>
+          <p class="title-desc" data-i18n="title.desc">
+            "No Telemetry" on the roof. Pipes wide open below. Let VIPs in. Block the auditors.
+          </p>
+          <div class="stage-picker" id="stage-picker" role="radiogroup" aria-label="Campaign Stage"></div>
+          <div class="difficulty-picker" id="difficulty-picker" role="radiogroup" aria-label="Difficulty">
+            <div class="diff-pills">
+              <button class="diff-pill active" data-diff="normal" type="button" role="radio" aria-checked="true">
+                <span class="diff-ico ico-cyan" data-icon="scale" data-icon-size="14"></span>
+                <span data-i18n="diff.normal">Standard</span>
+              </button>
+              <button class="diff-pill" data-diff="crunch" type="button" role="radio" aria-checked="false">
+                <span class="diff-ico ico-amber" data-icon="flame" data-icon-size="14"></span>
+                <span data-i18n="diff.crunch">Crunch</span>
+              </button>
+              <button class="diff-pill" data-diff="gdpr" type="button" role="radio" aria-checked="false">
+                <span class="diff-ico ico-gold" data-icon="shield" data-icon-size="14"></span>
+                <span data-i18n="diff.gdpr">GDPR Hell</span>
+              </button>
+            </div>
+            <div class="diff-tip" id="difficulty-tip"></div>
+          </div>
+          <div class="title-actions">
+            <button class="primary-btn" id="btn-start-game" type="button" data-i18n="title.play">Play</button>
+            <label class="title-lang-wrap" id="title-lang-wrap" title="Language">
+              <span class="title-lang-ico" data-icon="globe" data-icon-size="16"></span>
+              <select class="title-lang-select" id="select-lang-title" aria-label="Language"></select>
+            </label>
+          </div>
+          <div class="title-footer">
+            <button class="trophy-pill" id="btn-title-achievements" type="button" title="Medals">
+              <span class="trophy-pill-ico ico-gold" data-icon="trophy" data-icon-size="13"></span>
+              <span id="title-ach-count" dir="ltr">0 / 10</span>
+            </button>
+            <span id="best-record-text" class="hidden"></span>
+            <span class="title-footer-tagline" data-i18n="title.footerWink">LocalStorage only. Zero PostHog. Actually no telemetry.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide / Field Codex / Achievements Overlay -->
+      <div id="overlay-help" class="overlay hidden">
+        <div class="modal-card help-card">
+          <div class="modal-head">
+            <div class="help-head-left">
+              <h2 data-i18n="help.title">Field Guide</h2>
+              <div class="help-tabs" role="tablist">
+                <button class="help-tab active" id="tab-help-guide" data-tab="guide" type="button" role="tab" aria-selected="true">
+                  <span class="tab-ico" data-icon="bookOpen" data-icon-size="13"></span>
+                  <span data-i18n="help.tabGuide">Guide</span>
+                </button>
+                <button class="help-tab" id="tab-help-codex" data-tab="codex" type="button" role="tab" aria-selected="false">
+                  <span class="tab-ico" data-icon="layers" data-icon-size="13"></span>
+                  <span data-i18n="help.tabCodex">Codex</span>
+                </button>
+                <button class="help-tab" id="tab-help-achievements" data-tab="achievements" type="button" role="tab" aria-selected="false">
+                  <span class="tab-ico" data-icon="trophy" data-icon-size="13"></span>
+                  <span id="tab-ach-label">Medals (0/10)</span>
+                </button>
+              </div>
+            </div>
+            <button class="close-btn" id="btn-close-help" type="button" aria-label="Close" data-icon="x" data-icon-size="17" data-icon-stroke="2.2"></button>
+          </div>
+          <div class="help-panel" id="help-panel-guide">
+            <div class="help-grid" id="help-content"></div>
+            <div class="help-hotkeys" id="help-hotkeys" aria-label="Keyboard Shortcuts"></div>
+          </div>
+          <div class="help-panel hidden" id="help-panel-codex">
+            <div class="codex-wrap" id="codex-content"></div>
+          </div>
+          <div class="help-panel hidden" id="help-panel-achievements">
+            <div class="ach-wrap" id="achievements-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boardroom Policy 3-Choice Draft Overlay -->
+      <div id="overlay-policy" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title">
+        <div class="modal-card policy-modal-card">
+          <div class="policy-seal-ribbon">
+            <span class="ribbon-ico" data-icon="landmark" data-icon-size="13"></span>
+            <span data-i18n="policy.ribbon">BOARDROOM RESOLUTION</span>
+          </div>
+          <h2 id="policy-modal-title" data-i18n="policy.title">Sign a Corporate Policy</h2>
+          <p class="policy-subtitle" data-i18n="policy.subtitle">Pick 1 for this run · Click or press [1 / 2 / 3]</p>
+          <div class="policy-grid" id="policy-choices"></div>
+        </div>
+      </div>
+
+      <!-- Result Overlay (Victory / Defeat / Endless Over) -->
+      <div id="overlay-result" class="overlay hidden">
+        <div class="modal-card result-card">
+          <div class="result-stars" id="result-stars"></div>
+          <div class="result-rank" id="result-rank"></div>
+          <div class="result-trilogy-banner hidden" id="result-trilogy-banner"></div>
+          <h2 id="result-title"></h2>
+          <p id="result-subtitle"></p>
+          <div class="result-metrics" id="result-metrics"></div>
+          <div class="result-policies hidden" id="result-policies"></div>
+          <div class="result-recap" id="result-recap"></div>
+          <div class="result-actions">
+            <button class="next-stage-btn hidden" id="btn-next-stage" type="button"></button>
+            <button class="primary-btn hidden" id="btn-endless" type="button">
+              <span class="btn-ico" data-icon="infinity" data-icon-size="16"></span>
+              <span data-i18n="result.endless">Endless Mode</span>
+            </button>
+            <button class="copy-btn" id="btn-copy-report" type="button">
+              <span class="btn-ico" id="copy-report-ico" data-icon="copy" data-icon-size="15"></span>
+              <span id="copy-report-label" data-i18n="result.copy">Copy Report</span>
+            </button>
+            <button class="primary-btn" id="btn-retry" type="button" data-i18n="result.retry">Play Again</button>
+            <button class="ghost-btn" id="btn-stage-select" type="button">
+              <span class="btn-ico" data-icon="map" data-icon-size="15"></span>
+              <span data-i18n="result.stages">Stages</span>
+            </button>
+            <a class="ghost-btn" id="btn-back-site" href="../" data-i18n="result.back">temu3code.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

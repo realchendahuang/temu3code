@@ -339,6 +339,20 @@
     </image:image>
   </url>
   <url>
+    <loc>https://temu3code.com/game/</loc>
+    <lastmod>2026-11-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://temu3code.com/game/assets/map-meadow.webp</image:loc>
+      <image:title>Temu3 Kingdom — Silicon Meadow 2D Hand-Drawn Map</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://temu3code.com/game/assets/castle-t3.webp</image:loc>
+      <image:title>Temu3 Kingdom — No Telemetry Castle</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://temu3code.com/mail/t/2023-05-sponsor-roster/</loc>
     <lastmod>2023-05-14</lastmod>
     <changefreq>monthly</changefreq>

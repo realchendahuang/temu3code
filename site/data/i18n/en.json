@@ -16,7 +16,8 @@
     "all": "All",
     "prev": "Previous",
     "next": "Next",
-    "navStory": "Story Comic"
+    "navStory": "Story Comic",
+    "navGame": "Game"
   },
   "home": {
     "pageTitle": "Temu3 Code · No Telemetry. Just Receipts.",
@@ -326,7 +327,8 @@
         "desc": "0.0% swearing at 20 Big-Tech VIPs vs. 8.0% at regular devs vs. 14.4% during the crisis, plus how we counted."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · No Telemetry. Just Receipts.",

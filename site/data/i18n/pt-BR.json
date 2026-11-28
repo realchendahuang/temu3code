@@ -16,7 +16,8 @@
     "all": "Tudo",
     "prev": "Anterior",
     "next": "Próximo",
-    "navStory": "Quadrinho"
+    "navStory": "Quadrinho",
+    "navGame": "Jogo"
   },
   "home": {
     "pageTitle": "Temu3 Code · Zero telemetria. Só provas.",
@@ -326,7 +327,8 @@
         "desc": "0,0% de xingamento a 20 VIPs de big tech vs. 8,0% a dev comum vs. 14,4% na crise, e como a gente contou."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Zero telemetria. Só provas.",

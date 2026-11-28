@@ -16,7 +16,8 @@
     "all": "Tümü",
     "prev": "Önceki",
     "next": "Sonraki",
-    "navStory": "Çizgi Roman"
+    "navStory": "Çizgi Roman",
+    "navGame": "Oyun"
   },
   "home": {
     "pageTitle": "Temu3 Code · Sıfır telemetri. Sadece kanıt.",
@@ -326,7 +327,8 @@
         "desc": "20 büyük teknoloji VIP'sine %0,0 küfür, normal geliştiricilere %8,0, kriz sırasında %14,4, bir de nasıl saydığımız."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Sıfır telemetri. Sadece kanıt.",

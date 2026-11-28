@@ -16,7 +16,8 @@
     "all": "सभी",
     "prev": "पिछला",
     "next": "अगला",
-    "navStory": "कॉमिक"
+    "navStory": "कॉमिक",
+    "navGame": "गेम"
   },
   "home": {
     "pageTitle": "Temu3 Code · कोई ट्रैकिंग नहीं, सिर्फ़ सबूत",
@@ -326,7 +327,8 @@
         "desc": "20 बड़े टेक VIPs पर 0.0% गालियाँ, आम डेव्स पर 8.0%, संकट के दौरान 14.4%, साथ में हमने कैसे गिना."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · कोई ट्रैकिंग नहीं, सिर्फ़ सबूत",

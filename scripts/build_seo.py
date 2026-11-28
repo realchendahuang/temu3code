@@ -1214,6 +1214,12 @@ def build_sitemap(threads_en: list[dict], zh_bundle: dict, memes_data: dict) -> 
             meme_images.append((item["url"], item.get("titleEn", "")))
     add_url(f"{BASE_URL}/memes/", today, "weekly", "0.8", images=meme_images)
 
+    game_images = [
+        (f"{BASE_URL}/game/assets/map-meadow.webp", "Temu3 Kingdom — Silicon Meadow 2D Hand-Drawn Map"),
+        (f"{BASE_URL}/game/assets/castle-t3.webp", "Temu3 Kingdom — No Telemetry Castle"),
+    ]
+    add_url(f"{BASE_URL}/game/", today, "weekly", "0.8", images=game_images)
+
     for th in threads_en:
         tid = th["id"]
         en_loc = f"{BASE_URL}/mail/t/{tid}/"
@@ -1249,7 +1255,7 @@ def validate_outputs(threads_en: list[dict], memes_data: dict) -> None:
         "image": "http://www.google.com/schemas/sitemap-image/1.1",
     }
     urls = root.findall("sm:url", ns)
-    assert len(urls) == 4 + len(threads_en) * 2, f"Expected 72 sitemap URLs, got {len(urls)}"
+    assert len(urls) == 5 + len(threads_en) * 2, f"Expected {5 + len(threads_en) * 2} sitemap URLs, got {len(urls)}"
 
     cdn_urls = {memes_data.get("promoSheetUrl")}
     for ep in memes_data.get("storyEpisodes", []):

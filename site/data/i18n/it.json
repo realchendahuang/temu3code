@@ -16,7 +16,8 @@
     "all": "Tutti",
     "prev": "Precedente",
     "next": "Successivo",
-    "navStory": "Fumetto"
+    "navStory": "Fumetto",
+    "navGame": "Gioco"
   },
   "home": {
     "pageTitle": "Temu3 Code · Zero telemetria. Solo prove.",
@@ -326,7 +327,8 @@
         "desc": "0,0% di parolacce con 20 VIP del big tech vs. 8,0% con sviluppatori normali vs. 14,4% durante la crisi, e come abbiamo contato."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Zero telemetria. Solo prove.",

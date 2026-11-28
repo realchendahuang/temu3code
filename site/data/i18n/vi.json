@@ -16,7 +16,8 @@
     "all": "Tất cả",
     "prev": "Trước",
     "next": "Tiếp",
-    "navStory": "Truyện tranh"
+    "navStory": "Truyện tranh",
+    "navGame": "Trò chơi"
   },
   "home": {
     "pageTitle": "Temu3 Code · Không theo dõi. Chỉ có bằng chứng.",
@@ -326,7 +327,8 @@
         "desc": "0,0% chửi với 20 VIP Big-Tech vs. 8,0% với dev thường vs. 14,4% lúc khủng hoảng, kèm cách tụi mình đếm."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Không theo dõi. Chỉ có bằng chứng.",

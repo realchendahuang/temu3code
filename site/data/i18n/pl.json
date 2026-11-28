@@ -16,7 +16,8 @@
     "all": "Wszystko",
     "prev": "Poprzedni",
     "next": "Następny",
-    "navStory": "Komiks"
+    "navStory": "Komiks",
+    "navGame": "Gra"
   },
   "home": {
     "pageTitle": "Temu3 Code · Zero telemetrii. Same dowody.",
@@ -326,7 +327,8 @@
         "desc": "0,0% wyzwisk wobec 20 VIP-ów z big techu vs. 8,0% wobec zwykłych deweloperów vs. 14,4% w trakcie kryzysu, plus jak liczyliśmy."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Zero telemetrii. Same dowody.",

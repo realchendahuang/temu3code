@@ -16,7 +16,8 @@
     "all": "Alles",
     "prev": "Vorige",
     "next": "Volgende",
-    "navStory": "Strip"
+    "navStory": "Strip",
+    "navGame": "Spel"
   },
   "home": {
     "pageTitle": "Temu3 Code · Geen telemetrie. Alleen bewijs.",
@@ -326,7 +327,8 @@
         "desc": "0,0% schelden op 20 bigtech-VIP's vs. 8,0% op gewone devs vs. 14,4% tijdens de crisis, plus hoe we hebben geteld."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Geen telemetrie. Alleen bewijs.",

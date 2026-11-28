@@ -16,7 +16,8 @@
     "all": "Tout",
     "prev": "Précédent",
     "next": "Suivant",
-    "navStory": "BD"
+    "navStory": "BD",
+    "navGame": "Jeu"
   },
   "home": {
     "pageTitle": "Temu3 Code · Zéro télémétrie. Que des preuves.",
@@ -326,7 +327,8 @@
         "desc": "0,0 % d'insultes envers 20 VIP de la Big Tech vs. 8,0 % envers des devs lambda vs. 14,4 % pendant la crise, et notre méthode de comptage."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Zéro télémétrie. Que des preuves.",

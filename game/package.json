@@ -1,0 +1,20 @@
+{
+  "name": "temu3-kingdom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Temu3 Kingdom — 2D Hand-Drawn Satirical Tower Defense (Zero Telemetry)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "build:site": "tsc --noEmit && vite build --base=./ --outDir=../site/game",
+    "preview": "vite preview --port 4173"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "lucide": "^1.83.0"
+  }
+}

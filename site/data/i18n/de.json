@@ -16,7 +16,8 @@
     "all": "Alle",
     "prev": "Zurück",
     "next": "Weiter",
-    "navStory": "Story-Comic"
+    "navStory": "Story-Comic",
+    "navGame": "Spiel"
   },
   "home": {
     "pageTitle": "Temu3 Code · Keine Telemetrie. Nur Beweise.",
@@ -326,7 +327,8 @@
         "desc": "0,0 % Flüche gegen 20 Big-Tech-VIPs vs. 8,0 % gegen normale Devs vs. 14,4 % während der Krise, plus wie wir gezählt haben."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Keine Telemetrie. Nur Beweise.",

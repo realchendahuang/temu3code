@@ -16,7 +16,8 @@
     "all": "全部",
     "prev": "上一張",
     "next": "下一張",
-    "navStory": "連載漫畫"
+    "navStory": "連載漫畫",
+    "navGame": "塔防遊戲"
   },
   "home": {
     "pageTitle": "Temu3 Code · 絕無遙測，全是實錘",
@@ -326,7 +327,8 @@
         "desc": "對 20 位大廠高層 0.0% 髒話、對一般開發者 8.0%、危機期 14.4%，附完整統計方法。"
       }
     },
-    "storyTile": "連載"
+    "storyTile": "連載",
+    "gameTile": "塔防"
   },
   "readme": {
     "title": "Temu3 Code · 絕無遙測，全是實錘",

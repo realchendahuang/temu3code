@@ -165,7 +165,7 @@
     const pending = (async () => {
       try {
         const [res, enObj] = await Promise.all([
-          fetch(`${base}i18n/${norm}.json?v=15`),
+          fetch(`${base}i18n/${norm}.json?v=16`),
           norm !== "en" ? loadBundle("en", base) : Promise.resolve(null)
         ]);
         if (!res.ok) throw new Error("fetch failed");

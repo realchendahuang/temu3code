@@ -43,6 +43,7 @@ jobs:
           test -f _site/mail/index.html
           test -f _site/memes/index.html
           test -f _site/story/index.html
+          test -f _site/game/index.html
           test -f _site/receipts/x-2124825920808829077-temu3-code.webp
           test -f _site/evidence/00-cover-en.png
 

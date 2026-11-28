@@ -443,6 +443,7 @@ select:focus-visible,
 .tile-cal { background: linear-gradient(135deg, #1a73e8, #0b57d0); }
 .tile-memes { background: linear-gradient(135deg, #f5b942, #d97706); }
 .tile-story { background: linear-gradient(135deg, #4b7cf3, #7c3aed); }
+.tile-game { background: linear-gradient(135deg, #10b981, #047857); }
 .tile-report { background: linear-gradient(135deg, #d97757, #b45333); }
 
 .lang-picker-pill {

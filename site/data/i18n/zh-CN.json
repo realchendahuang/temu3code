@@ -16,7 +16,8 @@
     "all": "全部",
     "prev": "上一张",
     "next": "下一张",
-    "navStory": "连载漫画"
+    "navStory": "连载漫画",
+    "navGame": "塔防游戏"
   },
   "home": {
     "pageTitle": "Temu3 Code · 绝无遥测，全是实锤",
@@ -326,7 +327,8 @@
         "desc": "对 20 位大厂高管 0% 脏话、对普通开发者 8%、危机期 14.4%，附完整统计方法。"
       }
     },
-    "storyTile": "连载"
+    "storyTile": "连载",
+    "gameTile": "塔防"
   },
   "readme": {
     "title": "Temu3 Code · 绝无遥测，全是实锤",

@@ -3,3 +3,6 @@ __pycache__/
 .DS_Store
 .wrangler/
 /memes/
+game/node_modules/
+game/dist/
+game/raw-assets/

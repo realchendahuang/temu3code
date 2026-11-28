@@ -16,7 +16,8 @@
     "all": "Todo",
     "prev": "Anterior",
     "next": "Siguiente",
-    "navStory": "Cómic"
+    "navStory": "Cómic",
+    "navGame": "Juego"
   },
   "home": {
     "pageTitle": "Temu3 Code · Cero telemetría. Solo pruebas.",
@@ -326,7 +327,8 @@
         "desc": "0,0% de insultos a 20 VIP de las grandes tecnológicas vs. 8,0% a desarrolladores normales vs. 14,4% durante la crisis, y cómo lo contamos."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Cero telemetría. Solo pruebas.",

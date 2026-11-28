@@ -16,7 +16,8 @@
     "all": "전체",
     "prev": "이전",
     "next": "다음",
-    "navStory": "연재 만화"
+    "navStory": "연재 만화",
+    "navGame": "게임"
   },
   "home": {
     "pageTitle": "Temu3 Code · 텔레메트리 없음, 오직 증거뿐",
@@ -326,7 +327,8 @@
         "desc": "빅테크 VIP 20명에게 0.0%, 일반 개발자에게 8.0%, 위기 때 14.4%. 집계 방식까지 포함."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · 텔레메트리 없음, 오직 증거뿐",

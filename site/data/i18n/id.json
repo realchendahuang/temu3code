@@ -16,7 +16,8 @@
     "all": "Semua",
     "prev": "Sebelumnya",
     "next": "Berikutnya",
-    "navStory": "Komik"
+    "navStory": "Komik",
+    "navGame": "Game"
   },
   "home": {
     "pageTitle": "Temu3 Code · Tanpa telemetri. Cuma bukti.",
@@ -326,7 +327,8 @@
         "desc": "0,0% kata kasar ke 20 VIP Big-Tech vs. 8,0% ke developer biasa vs. 14,4% saat krisis, plus cara kami menghitung."
       }
     },
-    "storyTile": "TStory"
+    "storyTile": "TStory",
+    "gameTile": "TGame"
   },
   "readme": {
     "title": "Temu3 Code · Tanpa telemetri. Cuma bukti.",
