@@ -58,6 +58,7 @@ export interface EngineCallbacks {
   onHudDirty: () => void;
   onPolicyDraft?: (choices: PolicyChoice[]) => void;
   onAchievement?: (def: AchievementDef) => void;
+  onWaveStart?: (stageId: StageId, waveNumber: number) => void;
 }
 
 const STORAGE_KEY = 'temu3_kingdom_best_v1';
@@ -760,7 +761,7 @@ export class GameEngine {
     if (bonus > 0) {
       this.gold += bonus;
       this.spawnFlyingCoins(bonusFxX, bonusFxY, bonus, 2);
-      this.addFloatText(bonusFxX, bonusFxY, `+${bonus}$`, '#facc15', 1.2);
+      this.addFloatText(bonusFxX, bonusFxY, `+$${bonus}`, '#facc15', 1.2);
       // Generous Kingdom Rush cooldown shave on early wave call
       const cdShave = wasActive ? 4 : Math.max(2, Math.round(this.betweenWaveTimer * 0.35));
       const hadCd =
@@ -834,6 +835,7 @@ export class GameEngine {
       this.unlockAchievement('endless_15');
     }
     this.syncBgmIntensity();
+    this.callbacks.onWaveStart?.(stage.id, def.waveNumber);
     this.callbacks.onHudDirty();
   }
 
@@ -960,7 +962,7 @@ export class GameEngine {
     }
     tw.guardIds = [];
     this.towers.splice(idx, 1);
-    this.addFloatText(tw.x, tw.y - 24, `+${refund}$`, '#facc15', 1.1);
+    this.addFloatText(tw.x, tw.y - 24, `+$${refund}`, '#facc15', 1.1);
     this.spawnBurst(tw.x, tw.y, '#94a3b8', 10, 70);
     sfx.sell();
     this.callbacks.onHudDirty();
@@ -1135,7 +1137,7 @@ export class GameEngine {
     for (const e of this.enemies) {
       earned += perEnemy;
       targets.push({ x: e.x, y: e.y - 12, isVip: false });
-      this.addFloatText(e.x, e.y - 28, `+${perEnemy}$`, '#d8b4fe', 0.95);
+      this.addFloatText(e.x, e.y - 28, `+$${perEnemy}`, '#d8b4fe', 0.95);
     }
     for (const v of this.vips) {
       if (!v.fleeing) {
@@ -1798,7 +1800,7 @@ export class GameEngine {
         }
         const castle = stage.castlePos;
         this.spawnFlyingCoins(castle.x - 32, castle.y - 24, pay, doubled ? 6 : 4);
-        this.addFloatText(castle.x - 36, castle.y - 40, `+${pay}$ ${t(this.lang, 'canvas.vip')}`, '#fde047', 1.3);
+        this.addFloatText(castle.x - 36, castle.y - 40, `+$${pay} ${t(this.lang, 'canvas.vip')}`, '#fde047', 1.3);
         this.spawnBurst(castle.x - 30, castle.y, '#fde047', 16, 95);
         sfx.vipSuccess();
         this.callbacks.onHudDirty();
@@ -2110,7 +2112,7 @@ export class GameEngine {
                 this.gold += 5;
                 this.recordTowerGold(g.towerId, 5);
                 this.spawnFlyingCoins(g.x, g.y - 16, 5, 1);
-                this.addFloatText(g.x, g.y - 24, '+5$ @bot', '#38bdf8', 0.9);
+                this.addFloatText(g.x, g.y - 24, '+$5 @bot', '#38bdf8', 0.9);
                 this.callbacks.onHudDirty();
               }
             }
@@ -2716,7 +2718,7 @@ export class GameEngine {
       }
       const coinCount = e.isBoss ? 8 : e.kind === 'auditor' || e.kind === 'veteran' ? 2 : 1;
       this.spawnFlyingCoins(e.x, e.y - 14, reward, coinCount);
-      this.addFloatText(e.x, e.y - 24, `+${reward}$`, '#fde047', e.isBoss ? 1.4 : 0.92);
+      this.addFloatText(e.x, e.y - 24, `+$${reward}`, '#fde047', e.isBoss ? 1.4 : 0.92);
       this.spawnBurst(e.x, e.y - 12, e.isBoss ? '#60a5fa' : '#f8fafc', e.isBoss ? 34 : 10, e.isBoss ? 160 : 75);
       sfx.coin();
       if (e.isBoss || e.kind === 'gdpr') {

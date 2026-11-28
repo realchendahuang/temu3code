@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Temu3 Kingdom | 2D Satirical Tower Defense</title>
-  <meta name="description" content="A 2D hand-drawn satirical tower defense game. Escort Big-Tech VIPs, block open-source auditors, and trigger 'Steal Telemetry' behind a 'No Telemetry' sign. CC0 Parody. Zero tracking." />
+  <title>Temu3 Kingdom | 3-Day Satirical Tower Defense</title>
+  <meta name="description" content="You hung a 'Zero Tracking' sign, hid a data pipe, and blocked one fork author. Survive 3 days (Day 1: The Beef, Day 2: Going Viral, Day 3: 4 AM Panic) in this 2D hand-painted satirical tower defense game. CC0 Parody. Zero tracking." />
   <meta name="theme-color" content="#14181f" />
   <link rel="canonical" href="https://temu3code.com/game/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Temu3 Code" />
   <meta property="og:url" content="https://temu3code.com/game/" />
-  <meta property="og:title" content="Temu3 Kingdom | 2D Satirical Tower Defense" />
-  <meta property="og:description" content="A 2D hand-drawn satirical tower defense game. Escort Big-Tech VIPs, block open-source auditors, and unleash Data × PR combos behind a 'No Telemetry' sign across 3 campaign stages & Endless Audit. CC0 Parody. Zero tracking." />
+  <meta property="og:title" content="Temu3 Kingdom | 3-Day Satirical Tower Defense" />
+  <meta property="og:description" content="You hung a 'Zero Tracking' sign, hid a data pipe, and blocked one fork author. Survive 3 days while charming Big-Tech investors and keeping code checkers out. CC0 Parody. Zero tracking." />
   <meta property="og:image" content="https://temu3code.com/og-card.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Temu3 Kingdom | 2D Satirical Tower Defense" />
-  <meta name="twitter:description" content="Escort Big-Tech VIPs, block open-source auditors, and trigger 'Steal Telemetry' behind a 'No Telemetry' sign. 3-stage satirical tower defense. CC0 Parody. Zero tracking." />
+  <meta name="twitter:title" content="Temu3 Kingdom | 3-Day Satirical Tower Defense" />
+  <meta name="twitter:description" content="Survive 3 days after one bad block: keep code checkers out, sweep leaks under the rug, and charm visiting Big-Tech investors. CC0 Parody. Zero tracking." />
   <meta name="twitter:image" content="https://temu3code.com/og-card.png" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='3' y='3' width='58' height='58' rx='12' fill='none' stroke='%23facc15' stroke-opacity='0.45' stroke-width='2'/%3E%3Cpath d='M16 50V22h6v6h6v-6h8v6h6v-6h6v28H16z' fill='%231e293b' stroke='%23facc15' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M26 50V39a6 6 0 0 1 12 0v11' fill='%230f172a' stroke='%23fde047' stroke-width='3'/%3E%3Ccircle cx='32' cy='15' r='3.5' fill='%23c084fc'/%3E%3C/svg%3E" />
-  <script type="module" crossorigin src="./assets/index-cRq6uP7B.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DW07ZRRZ.css">
+  <script type="module" crossorigin src="./assets/index-9Ehk5yd4.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-faiwI-nV.css">
 </head>
 <body>
   <div id="app">
@@ -163,6 +163,21 @@
       <!-- Targeting Hint -->
       <div id="targeting-hint" class="hidden"></div>
 
+      <!-- Non-Blocking In-Game Story Dialogue Cut-In (Wave 1 / 5 / 10) -->
+      <aside id="story-dialogue" class="story-dialogue hidden" role="status" aria-live="polite">
+        <div class="story-dlg-avatar-wrap">
+          <img id="story-dlg-avatar" src="./assets/hero-rage.webp" alt="" draggable="false" />
+        </div>
+        <div class="story-dlg-body">
+          <div class="story-dlg-head">
+            <span class="story-dlg-speaker" id="story-dlg-speaker"></span>
+            <span class="story-dlg-tag" id="story-dlg-tag"></span>
+          </div>
+          <p class="story-dlg-line" id="story-dlg-line"></p>
+        </div>
+        <button class="story-dlg-close" id="btn-story-dlg-close" type="button" aria-label="Dismiss" data-icon="x" data-icon-size="13" data-icon-stroke="2.4"></button>
+      </aside>
+
       <!-- Interactive First-Run Tutorial Coachmark -->
       <aside id="tutorial-card" class="tutorial-card hidden" role="region" aria-live="polite" aria-label="Tutorial">
         <div class="tut-head">
@@ -180,34 +195,38 @@
       <!-- Custom 18-Language Dark Popover (shared by Title & HUD triggers) -->
       <div id="lang-popover" class="lang-popover hidden" role="listbox" aria-label="Language"></div>
 
-      <!-- Title Overlay (minimal, airy game start screen) -->
+      <!-- Title Overlay (minimal, story-first game start screen) -->
       <div id="overlay-title" class="overlay hidden">
         <div class="modal-card title-card">
           <h1 class="game-title">
             <span class="title-main" data-i18n="title.name">Temu3 Kingdom</span>
           </h1>
           <p class="title-desc" data-i18n="title.desc">
-            Block the auditors. Let VIPs in.
+            You hung a "Zero Tracking" sign, hid a data pipe, and blocked one fork author. Survive 3 days.
           </p>
           <div class="stage-picker" id="stage-picker" role="radiogroup" aria-label="Campaign Stage"></div>
           <div class="difficulty-picker" id="difficulty-picker" role="radiogroup" aria-label="Difficulty">
             <div class="diff-pills">
               <button class="diff-pill active" data-diff="normal" type="button" role="radio" aria-checked="true">
-                <span class="diff-ico ico-cyan" data-icon="scale" data-icon-size="14"></span>
-                <span data-i18n="diff.normal">Standard</span>
+                <span class="diff-ico ico-cyan" data-icon="wind" data-icon-size="14"></span>
+                <span data-i18n="diff.normal">Mild Drama</span>
               </button>
               <button class="diff-pill" data-diff="crunch" type="button" role="radio" aria-checked="false">
                 <span class="diff-ico ico-amber" data-icon="flame" data-icon-size="14"></span>
-                <span data-i18n="diff.crunch">Crunch</span>
+                <span data-i18n="diff.crunch">Trending</span>
               </button>
               <button class="diff-pill" data-diff="gdpr" type="button" role="radio" aria-checked="false">
-                <span class="diff-ico ico-gold" data-icon="shield" data-icon-size="14"></span>
-                <span data-i18n="diff.gdpr">GDPR Hell</span>
+                <span class="diff-ico ico-crimson" data-icon="alertTriangle" data-icon-size="14"></span>
+                <span data-i18n="diff.gdpr">Total Meltdown</span>
               </button>
             </div>
           </div>
           <div class="title-actions">
             <button class="primary-btn" id="btn-start-game" type="button" data-i18n="title.play">Play</button>
+            <button class="title-story-btn" id="btn-title-story" type="button">
+              <span class="btn-ico ico-gold" data-icon="bookOpen" data-icon-size="14"></span>
+              <span data-i18n="title.storyBtn">The Story</span>
+            </button>
             <button class="title-lang-btn" id="btn-lang-title" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" title="Language">
               <span class="title-lang-ico" data-icon="globe" data-icon-size="15"></span>
               <span class="title-lang-name" id="title-lang-name">English</span>
@@ -223,6 +242,61 @@
         </div>
       </div>
 
+      <!-- 3-Panel Comic Prologue Overlay -->
+      <div id="overlay-prologue" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="prologue-heading">
+        <div class="modal-card prologue-card">
+          <div class="prologue-head">
+            <span class="prologue-kicker" id="prologue-heading" data-i18n="prologue.kicker">HOW THIS MESS STARTED</span>
+            <button class="prologue-skip-btn" id="btn-prologue-skip" type="button" data-i18n="prologue.skip">Skip</button>
+          </div>
+          <div class="prologue-strip">
+            <article class="prologue-panel is-panel-1">
+              <div class="prologue-art art-day">
+                <img class="prologue-sprite is-castle" src="./assets/castle-t3.webp" alt="" draggable="false" />
+              </div>
+              <h3 class="prologue-panel-title" data-i18n="prologue.p1t">1. Loud Sign, Quiet Pipe</h3>
+              <p class="prologue-panel-body" data-i18n="prologue.p1b"></p>
+            </article>
+            <article class="prologue-panel is-panel-2">
+              <div class="prologue-art art-clash">
+                <img class="prologue-sprite is-left" src="./assets/hero-rage.webp" alt="" draggable="false" />
+                <img class="prologue-sprite is-right" src="./assets/enemy-fork.webp" alt="" draggable="false" />
+              </div>
+              <h3 class="prologue-panel-title" data-i18n="prologue.p2t">2. One Block Too Many</h3>
+              <p class="prologue-panel-body" data-i18n="prologue.p2b"></p>
+            </article>
+            <article class="prologue-panel is-panel-3">
+              <div class="prologue-art art-chaos">
+                <img class="prologue-sprite is-left" src="./assets/enemy-auditor.webp" alt="" draggable="false" />
+                <img class="prologue-sprite is-right" src="./assets/vip-exec.webp" alt="" draggable="false" />
+              </div>
+              <h3 class="prologue-panel-title" data-i18n="prologue.p3t">3. Three Days of Chaos</h3>
+              <p class="prologue-panel-body" data-i18n="prologue.p3b"></p>
+            </article>
+          </div>
+          <div class="prologue-actions">
+            <button class="primary-btn" id="btn-prologue-go" type="button" data-i18n="prologue.start">Start Day 1</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter Intro Briefing Card (Day 1 / Day 2 / Day 3) -->
+      <div id="overlay-chapter" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="chapter-title">
+        <div class="modal-card chapter-card" id="chapter-card" data-stage="meadow">
+          <div class="chapter-time-pill" id="chapter-time-pill"></div>
+          <div class="chapter-cast-row" id="chapter-cast-row"></div>
+          <h2 class="chapter-title" id="chapter-title"></h2>
+          <p class="chapter-brief" id="chapter-brief"></p>
+          <div class="chapter-actions">
+            <button class="primary-btn" id="btn-chapter-go" type="button" data-i18n="chapter.startBtn">Let's Go</button>
+            <button class="ghost-btn" id="btn-chapter-story" type="button">
+              <span class="btn-ico ico-gold" data-icon="bookOpen" data-icon-size="14"></span>
+              <span data-i18n="chapter.replayStory">Replay Story</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Compact In-Game Pause Menu -->
       <div id="overlay-pause" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-modal-title">
         <div class="modal-card pause-card">
@@ -231,6 +305,7 @@
             <button class="primary-btn" id="btn-pause-resume" type="button" data-i18n="pause.resume">Resume</button>
             <button class="ghost-btn" id="btn-pause-restart" type="button" data-i18n="pause.restart">Restart Stage</button>
             <button class="ghost-btn" id="btn-pause-stages" type="button" data-i18n="result.stages">Stages</button>
+            <button class="ghost-btn" id="btn-pause-story" type="button" data-i18n="chapter.replayStory">Replay Story</button>
             <button class="ghost-btn" id="btn-pause-tutorial" type="button" data-i18n="tut.replay">Replay Tutorial</button>
           </div>
         </div>
@@ -263,10 +338,16 @@
             <div class="help-grid" id="help-content"></div>
             <div class="help-bottom-row">
               <div class="help-hotkeys" id="help-hotkeys" aria-label="Keyboard Shortcuts"></div>
-              <button class="help-replay-tut-btn" id="btn-replay-tutorial" type="button">
-                <span class="btn-ico ico-gold" data-icon="compass" data-icon-size="14"></span>
-                <span data-i18n="tut.replay">Replay Tutorial</span>
-              </button>
+              <div class="help-bottom-btns">
+                <button class="help-replay-tut-btn" id="btn-replay-story" type="button">
+                  <span class="btn-ico ico-gold" data-icon="bookOpen" data-icon-size="14"></span>
+                  <span data-i18n="chapter.replayStory">Replay Story</span>
+                </button>
+                <button class="help-replay-tut-btn" id="btn-replay-tutorial" type="button">
+                  <span class="btn-ico ico-cyan" data-icon="compass" data-icon-size="14"></span>
+                  <span data-i18n="tut.replay">Replay Tutorial</span>
+                </button>
+              </div>
             </div>
           </div>
           <div class="help-panel hidden" id="help-panel-codex">
@@ -299,6 +380,7 @@
           <div class="result-trilogy-banner hidden" id="result-trilogy-banner"></div>
           <h2 id="result-title"></h2>
           <p id="result-subtitle"></p>
+          <div class="result-epilogue hidden" id="result-epilogue"></div>
           <div class="result-metrics" id="result-metrics"></div>
           <div class="result-policies hidden" id="result-policies"></div>
           <div class="result-recap" id="result-recap"></div>

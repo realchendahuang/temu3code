@@ -142,10 +142,31 @@ const cdDelete = document.getElementById('cd-delete') as HTMLSpanElement;
 const cdHero = document.getElementById('cd-hero') as HTMLSpanElement;
 
 const overlayTitle = document.getElementById('overlay-title') as HTMLDivElement;
+const overlayPrologue = document.getElementById('overlay-prologue') as HTMLDivElement;
+const overlayChapter = document.getElementById('overlay-chapter') as HTMLDivElement;
 const overlayPause = document.getElementById('overlay-pause') as HTMLDivElement;
 const overlayHelp = document.getElementById('overlay-help') as HTMLDivElement;
 const overlayPolicy = document.getElementById('overlay-policy') as HTMLDivElement;
 const overlayResult = document.getElementById('overlay-result') as HTMLDivElement;
+const storyDialogue = document.getElementById('story-dialogue') as HTMLElement;
+const storyDlgAvatar = document.getElementById('story-dlg-avatar') as HTMLImageElement;
+const storyDlgSpeaker = document.getElementById('story-dlg-speaker') as HTMLSpanElement;
+const storyDlgTag = document.getElementById('story-dlg-tag') as HTMLSpanElement;
+const storyDlgLine = document.getElementById('story-dlg-line') as HTMLParagraphElement;
+const btnStoryDlgClose = document.getElementById('btn-story-dlg-close') as HTMLButtonElement;
+const btnTitleStory = document.getElementById('btn-title-story') as HTMLButtonElement;
+const btnPrologueSkip = document.getElementById('btn-prologue-skip') as HTMLButtonElement;
+const btnPrologueGo = document.getElementById('btn-prologue-go') as HTMLButtonElement;
+const chapterCard = document.getElementById('chapter-card') as HTMLDivElement;
+const chapterTimePill = document.getElementById('chapter-time-pill') as HTMLDivElement;
+const chapterCastRow = document.getElementById('chapter-cast-row') as HTMLDivElement;
+const chapterTitle = document.getElementById('chapter-title') as HTMLHeadingElement;
+const chapterBrief = document.getElementById('chapter-brief') as HTMLParagraphElement;
+const btnChapterGo = document.getElementById('btn-chapter-go') as HTMLButtonElement;
+const btnChapterStory = document.getElementById('btn-chapter-story') as HTMLButtonElement;
+const btnPauseStory = document.getElementById('btn-pause-story') as HTMLButtonElement;
+const btnReplayStory = document.getElementById('btn-replay-story') as HTMLButtonElement;
+const resultEpilogue = document.getElementById('result-epilogue') as HTMLDivElement;
 const stagePicker = document.getElementById('stage-picker') as HTMLDivElement;
 const difficultyPicker = document.getElementById('difficulty-picker') as HTMLDivElement;
 const diffPillBtns = Array.from(difficultyPicker.querySelectorAll<HTMLButtonElement>('.diff-pill'));
@@ -189,10 +210,13 @@ const btnBackSite = document.getElementById('btn-back-site') as HTMLAnchorElemen
 
 const RTL_TEXT_CONTAINERS: HTMLElement[] = [
   overlayTitle,
+  overlayPrologue,
+  overlayChapter,
   overlayPause,
   overlayPolicy,
   overlayHelp,
   overlayResult,
+  storyDialogue,
   inspectorCard,
   bannerToast,
   achievementToast,
@@ -203,12 +227,13 @@ const RTL_TEXT_CONTAINERS: HTMLElement[] = [
 const SITE_LANG_STORAGE_KEY = 'temu3-lang';
 const LANG_STORAGE_KEY = 'temu3_kingdom_lang';
 const TUTORIAL_STORAGE_KEY = 'temu3_kingdom_tutorial_v1';
+const PROLOGUE_STORAGE_KEY = 'temu3_kingdom_prologue_v1';
 const DIFFICULTY_STORAGE_KEY = 'temu3_kingdom_difficulty';
 const STAGE_STORAGE_KEY = 'temu3_kingdom_stage_v1';
 const STAGE_ICONS: Record<StageId, IconName> = {
-  meadow: 'trees',
-  bridge: 'landmark',
-  furnace: 'cpu',
+  meadow: 'sun',
+  bridge: 'flame',
+  furnace: 'clock',
 };
 const STAGE_ICON_COLORS: Record<StageId, string> = {
   meadow: 'ico-emerald',
@@ -304,6 +329,171 @@ function toggleLangPopover(anchor: HTMLButtonElement): void {
   btnLangHud.setAttribute('aria-expanded', anchor === btnLangHud ? 'true' : 'false');
   btnLangTitle.setAttribute('aria-expanded', anchor === btnLangTitle ? 'true' : 'false');
   positionLangPopover(anchor);
+}
+
+// ---- Story Engine: 3-Panel Prologue, Chapter Briefings & Wave Story Cut-Ins ----
+
+type StoryTone = 'info' | 'gold' | 'warn' | 'purple';
+
+interface WaveCutInDef {
+  avatar: string;
+  speakerKey: string;
+  tone: StoryTone;
+}
+
+const WAVE_STORY_CUTINS: Record<StageId, Partial<Record<number, WaveCutInDef>>> = {
+  meadow: {
+    1: { avatar: './assets/enemy-dev.webp', speakerKey: 'story.speaker.dev', tone: 'info' },
+    5: { avatar: './assets/hero-vip.webp', speakerKey: 'story.speaker.theo', tone: 'gold' },
+    10: { avatar: './assets/enemy-gdpr.webp', speakerKey: 'story.speaker.gdpr', tone: 'warn' },
+  },
+  bridge: {
+    1: { avatar: './assets/hero-rage.webp', speakerKey: 'story.speaker.theo', tone: 'warn' },
+    5: { avatar: './assets/vip-exec.webp', speakerKey: 'story.speaker.vip', tone: 'gold' },
+    10: { avatar: './assets/enemy-gdpr.webp', speakerKey: 'story.speaker.gdpr', tone: 'warn' },
+  },
+  furnace: {
+    1: { avatar: './assets/hero-rage.webp', speakerKey: 'story.speaker.theo', tone: 'purple' },
+    5: { avatar: './assets/enemy-auditor.webp', speakerKey: 'story.speaker.auditor', tone: 'warn' },
+    10: { avatar: './assets/enemy-gdpr.webp', speakerKey: 'story.speaker.gdpr', tone: 'warn' },
+  },
+};
+
+const CHAPTER_CAST_AVATARS: Record<StageId, string[]> = {
+  meadow: ['./assets/hero-rage.webp', './assets/enemy-fork.webp', './assets/vip-exec.webp'],
+  bridge: ['./assets/enemy-auditor.webp', './assets/enemy-veteran.webp', './assets/vip-exec.webp'],
+  furnace: ['./assets/hero-rage.webp', './assets/enemy-gdpr.webp', './assets/castle-t3.webp'],
+};
+
+let prologueReturnTarget: 'launch' | 'title' | 'resume' | 'chapter' = 'title';
+let pausedBeforePrologue = false;
+let activeChapterStageId: StageId | null = null;
+let activeStoryCutIn: { stageId: StageId; waveNumber: number } | null = null;
+let storyDialogueTimer: number | null = null;
+
+function isPrologueSeen(): boolean {
+  try {
+    return localStorage.getItem(PROLOGUE_STORAGE_KEY) === 'done';
+  } catch {
+    return false;
+  }
+}
+
+function markPrologueSeen(): void {
+  try {
+    localStorage.setItem(PROLOGUE_STORAGE_KEY, 'done');
+  } catch {
+    // ignore storage restrictions
+  }
+}
+
+function renderPrologueActionText(): void {
+  const lang = engine.lang;
+  if (prologueReturnTarget === 'launch') {
+    btnPrologueGo.textContent =
+      selectedStageId === 'meadow' ? t(lang, 'prologue.start') : t(lang, 'chapter.startBtn');
+  } else {
+    btnPrologueGo.textContent = t(lang, 'tut.done');
+  }
+}
+
+function openPrologueModal(returnTarget: 'launch' | 'title' | 'resume' | 'chapter'): void {
+  closeLangPopover(false);
+  prologueReturnTarget = returnTarget;
+  if (returnTarget === 'resume' && started) {
+    pausedBeforePrologue = engine.paused;
+    engine.paused = true;
+    refreshHud();
+  }
+  overlayTitle.classList.add('hidden');
+  overlayChapter.classList.add('hidden');
+  overlayPause.classList.add('hidden');
+  renderPrologueActionText();
+  overlayPrologue.classList.remove('hidden');
+}
+
+function closePrologueModal(): void {
+  if (overlayPrologue.classList.contains('hidden')) return;
+  markPrologueSeen();
+  overlayPrologue.classList.add('hidden');
+  const target = prologueReturnTarget;
+  if (target === 'launch') {
+    launchSelectedStage();
+  } else if (target === 'chapter') {
+    openChapterBriefing(activeChapterStageId ?? selectedStageId);
+  } else if (target === 'resume') {
+    if (started && overlayPolicy.classList.contains('hidden')) {
+      engine.paused = pausedBeforePrologue;
+    }
+    refreshHud();
+  } else {
+    overlayTitle.classList.remove('hidden');
+  }
+}
+
+function renderChapterBriefingContent(stageId: StageId): void {
+  const lang = engine.lang;
+  const icoName = STAGE_ICONS[stageId] ?? 'sun';
+  const icoCls = STAGE_ICON_COLORS[stageId] ?? 'ico-gold';
+  chapterCard.dataset.stage = stageId;
+  chapterTimePill.innerHTML = `${iconSvg(icoName, { size: 13, className: icoCls })}<span>${escapeHtml(t(lang, `chapter.${stageId}.time`))}</span>`;
+  const avatars = CHAPTER_CAST_AVATARS[stageId] ?? [];
+  chapterCastRow.innerHTML = avatars
+    .map(
+      (src, idx) =>
+        `<div class="chapter-cast-chip${idx === 1 ? ' is-center' : ''}"><img src="${src}" alt="" draggable="false" /></div>`
+    )
+    .join('');
+  chapterTitle.textContent = t(lang, `stage.${stageId}.name`);
+  chapterBrief.textContent = t(lang, `chapter.${stageId}.brief`);
+  btnChapterGo.textContent = t(lang, 'chapter.startBtn');
+}
+
+function openChapterBriefing(stageId: StageId): void {
+  closeLangPopover(false);
+  activeChapterStageId = stageId;
+  overlayTitle.classList.add('hidden');
+  overlayResult.classList.add('hidden');
+  overlayPrologue.classList.add('hidden');
+  renderChapterBriefingContent(stageId);
+  overlayChapter.classList.remove('hidden');
+}
+
+function hideStoryDialogue(): void {
+  activeStoryCutIn = null;
+  if (storyDialogueTimer !== null) {
+    window.clearTimeout(storyDialogueTimer);
+    storyDialogueTimer = null;
+  }
+  storyDialogue.classList.remove('is-visible');
+  storyDialogue.classList.add('hidden');
+}
+
+function renderActiveStoryDialogue(): void {
+  if (!activeStoryCutIn) return;
+  const { stageId, waveNumber } = activeStoryCutIn;
+  const def = WAVE_STORY_CUTINS[stageId]?.[waveNumber];
+  if (!def) {
+    hideStoryDialogue();
+    return;
+  }
+  const lang = engine.lang;
+  storyDlgAvatar.src = def.avatar;
+  storyDlgSpeaker.textContent = t(lang, def.speakerKey);
+  storyDlgTag.textContent = t(lang, 'canvas.waveFmt', { n: waveNumber });
+  storyDlgLine.textContent = t(lang, `story.${stageId}.w${waveNumber}`);
+  storyDialogue.className = `story-dialogue tone-${def.tone} is-visible`;
+}
+
+function handleWaveStoryDialogue(stageId: StageId, waveNumber: number): void {
+  const def = WAVE_STORY_CUTINS[stageId]?.[waveNumber];
+  if (!def) return;
+  activeStoryCutIn = { stageId, waveNumber };
+  renderActiveStoryDialogue();
+  if (storyDialogueTimer !== null) window.clearTimeout(storyDialogueTimer);
+  storyDialogueTimer = window.setTimeout(() => {
+    hideStoryDialogue();
+  }, 6400);
 }
 
 // ---- Interactive 4-Step First-Run Tutorial ----
@@ -596,13 +786,17 @@ syncCanvasHiDpi();
 
 const engine = new GameEngine({
   onToast: (msg, tone = 'info') => showToast(msg, tone),
-  onGameEnd: (kind) => showResultModal(kind),
+  onGameEnd: (kind) => {
+    hideStoryDialogue();
+    showResultModal(kind);
+  },
   onHudDirty: () => {
     refreshHud();
     if (ui.selectedPadId) syncOpenRadialMenu();
   },
   onPolicyDraft: (choices) => openPolicyDraft(choices),
   onAchievement: (def) => handleAchievementUnlocked(def),
+  onWaveStart: (stageId, waveNumber) => handleWaveStoryDialogue(stageId, waveNumber),
 });
 
 engine.lang = 'en';
@@ -756,6 +950,7 @@ function disarmResetSave(): void {
 
 function restartCurrentStage(showRestartToast = true): void {
   disarmRestart();
+  hideStoryDialogue();
   lastResultKind = null;
   overlayResult.classList.add('hidden');
   closeHelpModal();
@@ -951,6 +1146,15 @@ function applyLanguage(): void {
   else if (ui.selectedEntity) refreshSelectedEntityInspector();
   if (!overlayResult.classList.contains('hidden') && lastResultKind) {
     renderResultModalContent(lastResultKind);
+  }
+  if (!overlayPrologue.classList.contains('hidden')) {
+    renderPrologueActionText();
+  }
+  if (!overlayChapter.classList.contains('hidden') && activeChapterStageId) {
+    renderChapterBriefingContent(activeChapterStageId);
+  }
+  if (activeStoryCutIn && !storyDialogue.classList.contains('hidden')) {
+    renderActiveStoryDialogue();
   }
   updateTargetingHint();
   renderTutorialCard();
@@ -2904,6 +3108,21 @@ function renderResultModalContent(kind: 'victory' | 'defeat' | 'endless_over'): 
     btnEndless.classList.add('hidden');
   }
 
+  if (kind === 'victory') {
+    const epilogueText = t(lang, `chapter.${stage.id}.epilogue`);
+    const timeText = t(lang, `chapter.${stage.id}.time`);
+    const epIco = STAGE_ICONS[stage.id] ?? 'sun';
+    const epCls = STAGE_ICON_COLORS[stage.id] ?? 'ico-gold';
+    resultEpilogue.className = `result-epilogue is-${stage.id}`;
+    resultEpilogue.innerHTML = `
+      <div class="result-epilogue-kicker">${iconSvg(epIco, { size: 12, className: epCls })}<span>${escapeHtml(timeText)}</span></div>
+      <p class="result-epilogue-text">${escapeHtml(epilogueText)}</p>
+    `;
+  } else {
+    resultEpilogue.className = 'result-epilogue hidden';
+    resultEpilogue.innerHTML = '';
+  }
+
   const s = engine.stats;
   const rows: Array<[string, string]> = [
     [String(s.enemiesBlocked), t(lang, 'metric.blocked')],
@@ -3167,14 +3386,24 @@ canvas.addEventListener('contextmenu', (ev) => {
   notifyTutorialEvent('hero');
 });
 
-// Prevent pointerdown on HUD controls, tutorial coachmark & language popover from bleeding to canvas
-for (const el of [hudTop, hudBottom, tutorialCard, langPopover]) {
+// Prevent pointerdown on HUD controls, story dialogue, tutorial coachmark & language popover from bleeding to canvas
+for (const el of [hudTop, hudBottom, tutorialCard, langPopover, storyDialogue]) {
   el.addEventListener('pointerdown', (ev) => {
-    if (ev.target !== el || el === tutorialCard || el === langPopover) {
+    if (ev.target !== el || el === tutorialCard || el === langPopover || el === storyDialogue) {
       lastUiPointerTs = performance.now();
     }
   });
 }
+
+btnStoryDlgClose.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  hideStoryDialogue();
+});
+
+storyDialogue.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  hideStoryDialogue();
+});
 
 document.addEventListener('click', (ev) => {
   if (pinnedPolicyBadgeId !== null && !(ev.target instanceof Element && ev.target.closest('.policy-badge'))) {
@@ -3311,9 +3540,12 @@ heroPill.addEventListener('click', (ev) => {
 
 function launchSelectedStage(): void {
   disarmRestart();
+  hideStoryDialogue();
   started = true;
   lastResultKind = null;
   overlayTitle.classList.add('hidden');
+  overlayPrologue.classList.add('hidden');
+  overlayChapter.classList.add('hidden');
   overlayResult.classList.add('hidden');
   closePolicyDraft();
   closeRadialMenu();
@@ -3328,7 +3560,7 @@ function launchSelectedStage(): void {
   applyLanguage();
   const welcomeTone =
     selectedStageId === 'furnace' ? 'purple' : selectedStageId === 'bridge' ? 'good' : 'info';
-  const welcomeIco: IconName = STAGE_ICONS[selectedStageId] ?? 'trees';
+  const welcomeIco: IconName = STAGE_ICONS[selectedStageId] ?? 'sun';
   if (isTutorialCompleted()) {
     showToast(t(engine.lang, `stage.${selectedStageId}.welcome`), welcomeTone, welcomeIco);
   }
@@ -3337,7 +3569,50 @@ function launchSelectedStage(): void {
 
 document.getElementById('btn-start-game')!.addEventListener('click', () => {
   closeLangPopover(false);
+  audioExt.inspect?.();
+  if (!isPrologueSeen()) {
+    openPrologueModal('launch');
+  } else {
+    openChapterBriefing(selectedStageId);
+  }
+});
+
+btnTitleStory.addEventListener('click', () => {
+  closeLangPopover(false);
+  audioExt.inspect?.();
+  openPrologueModal('title');
+});
+
+btnPrologueGo.addEventListener('click', () => {
+  audioExt.inspect?.();
+  closePrologueModal();
+});
+
+btnPrologueSkip.addEventListener('click', () => {
+  closePrologueModal();
+});
+
+btnChapterGo.addEventListener('click', () => {
+  audioExt.inspect?.();
+  overlayChapter.classList.add('hidden');
   launchSelectedStage();
+});
+
+btnChapterStory.addEventListener('click', () => {
+  audioExt.inspect?.();
+  openPrologueModal('chapter');
+});
+
+btnReplayStory.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  closeHelpModal();
+  audioExt.inspect?.();
+  openPrologueModal(started ? 'resume' : 'title');
+});
+
+btnPauseStory.addEventListener('click', () => {
+  audioExt.inspect?.();
+  openPrologueModal('resume');
 });
 
 btnLangTitle.addEventListener('click', (ev) => {
@@ -3556,11 +3831,12 @@ btnNextStage.addEventListener('click', () => {
   const nextId = btnNextStage.dataset.nextStage as StageId | undefined;
   if (!nextId || !STAGE_ORDER.includes(nextId)) return;
   applyStage(nextId, true);
-  launchSelectedStage();
+  openChapterBriefing(nextId);
 });
 
 btnEndless.addEventListener('click', () => {
   disarmRestart();
+  hideStoryDialogue();
   lastResultKind = null;
   overlayResult.classList.add('hidden');
   engine.enterEndlessMode();
@@ -3575,9 +3851,12 @@ document.getElementById('btn-retry')!.addEventListener('click', () => {
 
 btnStageSelect.addEventListener('click', () => {
   disarmRestart();
+  hideStoryDialogue();
   started = false;
   lastResultKind = null;
   overlayResult.classList.add('hidden');
+  overlayPrologue.classList.add('hidden');
+  overlayChapter.classList.add('hidden');
   closePolicyDraft();
   closeRadialMenu();
   cancelTargeting();
@@ -3615,6 +3894,25 @@ window.addEventListener('keydown', (ev) => {
   }
   if (key === 'Escape' && !overlayHelp.classList.contains('hidden')) {
     closeHelpModal();
+    return;
+  }
+  if (!overlayPrologue.classList.contains('hidden')) {
+    if (key === 'Escape' || key === 'Enter' || key === ' ') {
+      ev.preventDefault();
+      closePrologueModal();
+    }
+    return;
+  }
+  if (!overlayChapter.classList.contains('hidden')) {
+    if (key === 'Enter' || key === ' ') {
+      ev.preventDefault();
+      overlayChapter.classList.add('hidden');
+      launchSelectedStage();
+    } else if (key === 'Escape') {
+      ev.preventDefault();
+      overlayChapter.classList.add('hidden');
+      overlayTitle.classList.remove('hidden');
+    }
     return;
   }
 

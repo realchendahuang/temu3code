@@ -5265,3 +5265,553 @@ body {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+
+/* ---- Story System: Title Hook, 3-Panel Comic Prologue, Chapter Briefing, Wave Cut-Ins & Epilogue ---- */
+.title-story-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 13px;
+  height: 42px;
+  border-radius: 12px;
+  border: 2px solid rgba(250, 204, 21, 0.48);
+  background: rgba(250, 204, 21, 0.11);
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+
+.title-story-btn:hover {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.22);
+  transform: translateY(-1px);
+}
+
+.help-bottom-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 3-Panel Illustrated Comic Prologue */
+.prologue-card {
+  width: min(860px, 95%);
+  padding: 20px 22px 22px;
+  border-color: rgba(250, 204, 21, 0.62);
+}
+
+.prologue-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.prologue-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.14);
+  border: 1px solid rgba(250, 204, 21, 0.46);
+  color: var(--text-gold);
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.prologue-skip-btn {
+  padding: 5px 12px;
+  border-radius: 9px;
+  border: 1.5px solid rgba(148, 163, 184, 0.36);
+  background: rgba(30, 41, 59, 0.68);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.14s, color 0.14s, background 0.14s;
+}
+
+.prologue-skip-btn:hover {
+  border-color: rgba(250, 204, 21, 0.6);
+  color: var(--text-primary);
+  background: rgba(30, 41, 59, 0.92);
+}
+
+.prologue-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 18px;
+  text-align: start;
+}
+
+.prologue-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 13px 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(24, 33, 49, 0.94) 0%, rgba(15, 22, 34, 0.98) 100%);
+  border: 1.5px solid rgba(148, 163, 184, 0.28);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34);
+  min-width: 0;
+}
+
+.prologue-panel.is-panel-1 {
+  border-color: rgba(74, 222, 128, 0.38);
+}
+
+.prologue-panel.is-panel-2 {
+  border-color: rgba(251, 146, 60, 0.42);
+}
+
+.prologue-panel.is-panel-3 {
+  border-color: rgba(250, 204, 21, 0.48);
+}
+
+.prologue-art {
+  position: relative;
+  height: 112px;
+  border-radius: 10px;
+  margin-bottom: 11px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prologue-art.art-day {
+  background: radial-gradient(circle at 50% 25%, rgba(74, 222, 128, 0.24) 0%, rgba(15, 39, 32, 0.92) 72%);
+}
+
+.prologue-art.art-clash {
+  background: radial-gradient(circle at 50% 25%, rgba(251, 146, 60, 0.28) 0%, rgba(46, 22, 20, 0.92) 74%);
+}
+
+.prologue-art.art-chaos {
+  background: radial-gradient(circle at 50% 25%, rgba(250, 204, 21, 0.24) 0%, rgba(27, 23, 52, 0.94) 74%);
+}
+
+.prologue-sprite {
+  height: 82px;
+  width: auto;
+  max-width: 46%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.52));
+}
+
+.prologue-sprite.is-castle {
+  height: 94px;
+  max-width: 78%;
+}
+
+.prologue-panel-title {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--text-gold);
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.prologue-panel-body {
+  font-size: 13px;
+  line-height: 1.58;
+  color: var(--text-body);
+}
+
+.prologue-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* Chapter Intro Briefing Card */
+.chapter-card {
+  width: min(560px, 94%);
+  padding: 24px 26px;
+  text-align: center;
+}
+
+.chapter-card[data-stage="meadow"] {
+  border-color: rgba(74, 222, 128, 0.65);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 222, 128, 0.18) 0%, transparent 56%),
+    linear-gradient(180deg, #162229 0%, #0d121a 100%);
+}
+
+.chapter-card[data-stage="bridge"] {
+  border-color: rgba(251, 146, 60, 0.72);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.22) 0%, transparent 56%),
+    linear-gradient(180deg, #221a20 0%, #0d121a 100%);
+}
+
+.chapter-card[data-stage="furnace"] {
+  border-color: rgba(56, 189, 248, 0.72);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.26) 0%, transparent 58%),
+    linear-gradient(180deg, #161731 0%, #0b0f1b 100%);
+}
+
+.chapter-time-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(250, 204, 21, 0.42);
+  color: var(--text-gold);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+
+.chapter-cast-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.chapter-cast-chip {
+  width: 66px;
+  height: 66px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1.5px solid rgba(148, 163, 184, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.chapter-cast-chip.is-center {
+  width: 78px;
+  height: 78px;
+  border-color: rgba(250, 204, 21, 0.56);
+  background: rgba(30, 41, 59, 0.86);
+  transform: translateY(-4px);
+}
+
+.chapter-cast-chip img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.chapter-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.chapter-brief {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-body);
+  max-width: 46ch;
+  margin: 0 auto 20px;
+}
+
+.chapter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Non-Blocking In-Game Wave Story Cut-In Strip */
+.story-dialogue {
+  position: absolute;
+  left: 16px;
+  bottom: clamp(72px, 11.2%, 86px);
+  z-index: 36;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  max-width: min(440px, calc(100% - 340px));
+  padding: 10px 12px 10px 10px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(16, 24, 39, 0.96) 0%, rgba(11, 17, 29, 0.96) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.62);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.62);
+  cursor: pointer;
+  animation: storySlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.story-dialogue.tone-gold {
+  border-color: rgba(250, 204, 21, 0.72);
+}
+
+.story-dialogue.tone-warn {
+  border-color: rgba(248, 113, 113, 0.72);
+}
+
+.story-dialogue.tone-purple {
+  border-color: rgba(192, 132, 252, 0.72);
+}
+
+@keyframes storySlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.story-dlg-avatar-wrap {
+  width: 50px;
+  height: 50px;
+  border-radius: 11px;
+  background: rgba(30, 41, 59, 0.86);
+  border: 1.5px solid rgba(250, 204, 21, 0.44);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.story-dlg-avatar-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.story-dlg-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.story-dlg-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 3px;
+}
+
+.story-dlg-speaker {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-gold);
+}
+
+.story-dlg-tag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.38);
+  color: #bae6fd;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.story-dlg-line {
+  font-size: 13px;
+  line-height: 1.48;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.story-dlg-close {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(30, 41, 59, 0.72);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.story-dlg-close:hover {
+  color: var(--text-primary);
+  border-color: rgba(250, 204, 21, 0.55);
+}
+
+/* Victory Story Epilogue Callout inside Result Modal */
+.result-epilogue {
+  margin: 0 auto 14px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1.5px solid rgba(250, 204, 21, 0.38);
+  text-align: start;
+  max-width: 560px;
+}
+
+.result-epilogue.is-meadow {
+  border-color: rgba(74, 222, 128, 0.45);
+}
+
+.result-epilogue.is-bridge {
+  border-color: rgba(245, 158, 11, 0.52);
+}
+
+.result-epilogue.is-furnace {
+  border-color: rgba(192, 132, 252, 0.56);
+}
+
+.result-epilogue-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-gold);
+  margin-bottom: 4px;
+}
+
+.result-epilogue-text {
+  font-size: 13px;
+  line-height: 1.56;
+  color: var(--text-body);
+}
+
+[dir="rtl"] .prologue-strip,
+[dir="rtl"] .story-dialogue,
+[dir="rtl"] .result-epilogue {
+  text-align: right;
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .title-card .title-story-btn {
+    height: 30px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .prologue-card {
+    padding: 11px 14px;
+  }
+
+  .prologue-head {
+    margin-bottom: 8px;
+  }
+
+  .prologue-strip {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .prologue-panel {
+    padding: 8px 9px;
+  }
+
+  .prologue-art {
+    height: 62px;
+    margin-bottom: 6px;
+  }
+
+  .prologue-sprite {
+    height: 50px;
+  }
+
+  .prologue-sprite.is-castle {
+    height: 56px;
+  }
+
+  .prologue-panel-title {
+    font-size: 12px;
+    margin-bottom: 3px;
+  }
+
+  .prologue-panel-body {
+    font-size: 11px;
+    line-height: 1.42;
+  }
+
+  .chapter-card {
+    padding: 14px 18px;
+  }
+
+  .chapter-cast-row {
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  .chapter-cast-chip {
+    width: 44px;
+    height: 44px;
+  }
+
+  .chapter-cast-chip.is-center {
+    width: 52px;
+    height: 52px;
+  }
+
+  .chapter-brief {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .story-dialogue {
+    bottom: 50px;
+    left: 10px;
+    max-width: min(360px, calc(100% - 220px));
+    padding: 7px 9px;
+    gap: 8px;
+  }
+
+  .story-dlg-avatar-wrap {
+    width: 38px;
+    height: 38px;
+  }
+
+  .story-dlg-line {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 600px) {
+  .prologue-strip {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .prologue-art {
+    height: 84px;
+  }
+
+  .prologue-sprite {
+    height: 64px;
+  }
+
+  .story-dialogue {
+    max-width: calc(100% - 24px);
+    left: 12px;
+  }
+}
