@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0 व्यंग्य टॉवर डिफेंस · ज़ीरो टेलीमेट्री',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'ज़ीरो-टेलीमेट्री किला',
-  'title.desc': 'छत पर "No Telemetry" का बोर्ड, नीचे पाइप पूरे खुले। VIP आने दो, ऑडिटर रोको।',
+  'title.desc': 'ऑडिटर रोको, गोल्डन VIP जाने दो।',
   'title.play': 'खेलें',
-  'title.footerWink': 'सिर्फ़ LocalStorage। ज़ीरो PostHog। सच में कोई टेलीमेट्री नहीं।',
+  'title.footerWink': 'CC0 · ज़ीरो टेलीमेट्री',
   'title.langLabel': 'भाषा',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'लॉर्ड Theo चलाओ',
   'tut.s3b': 'सड़क पर क्लिक करके Theo भेजो। VIP के साथ चलने पर 2x कैश और शील्ड।',
   'tut.s4t': 'किले की स्किल आज़माओ',
-  'tut.s4b': 'तुरंत कैश के लिए [1] डेटा चोरी दबाओ—लीक अलार्म पर नज़र रखो।',
+  'tut.s4b': 'तुरंत कैश के लिए [1] डेटा चोरी दबाओ, लीक अलार्म पर नज़र रखो।',
   'tut.completeToast': 'बेसिक पूरा। वैल्यूएशन बचाओ!',
+  'pause.title': 'रुका हुआ',
+  'pause.resume': 'जारी रखें',
+  'pause.restart': 'फिर शुरू करें',
 } satisfies LocaleDict;

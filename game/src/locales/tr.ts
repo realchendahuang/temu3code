@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0 Hiciv Kule Savunma · Sıfır Telemetri',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Sıfır Telemetri Kalesi',
-  'title.desc': 'Çatıda "No Telemetry" tabelası, altta borular sonuna kadar açık. VIP\'leri al, denetçileri durdur.',
+  'title.desc': 'Denetçileri durdur. VIP\'leri geçir.',
   'title.play': 'Oyna',
-  'title.footerWink': 'Sadece LocalStorage. Sıfır PostHog. Gerçekten telemetri yok.',
+  'title.footerWink': 'CC0 · Sıfır telemetri',
   'title.langLabel': 'Dil',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Lord Theo\'yu Yürüt',
   'tut.s3b': 'Yola tıklayıp Theo\'yu gönder. Altın VIP yanında 2x nakit + kalkan.',
   'tut.s4t': 'Kale Yeteneği Kullan',
-  'tut.s4b': 'Hızlı nakit için [1] Veri Çal\'a bas—alarm çubuğunu gözden kaçırma.',
+  'tut.s4b': 'Hızlı nakit için [1] Veri Çal\'a bas, alarm çubuğunu gözden kaçırma.',
   'tut.completeToast': 'Temel tamam. Değerlemeyi koru!',
+  'pause.title': 'Duraklatıldı',
+  'pause.resume': 'Devam Et',
+  'pause.restart': 'Yeniden Başlat',
 } satisfies LocaleDict;

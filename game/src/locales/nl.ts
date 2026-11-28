@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0-Satire Tower Defense · Zero Telemetrie',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Zero-Telemetrie-Fort',
-  'title.desc': '"No Telemetry" op het dak. Buizen wijd open eronder. Laat VIPs door. Blokkeer auditors.',
+  'title.desc': 'Stop de auditors. Laat VIPs door.',
   'title.play': 'Spelen',
-  'title.footerWink': 'Alleen LocalStorage. Geen PostHog. Echt nul telemetrie.',
+  'title.footerWink': 'CC0 · Nul telemetrie',
   'title.langLabel': 'Taal',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Verplaats Lord Theo',
   'tut.s3b': 'Klik op de weg om Theo te sturen. Naast VIPs: 2x geld & schild.',
   'tut.s4t': 'Gebruik een skill',
-  'tut.s4b': 'Druk [1] Steel Data voor snel geld—let wel op het lekalarm.',
+  'tut.s4b': 'Druk [1] Steel Data voor snel geld, let wel op het lekalarm.',
   'tut.completeToast': 'Basis klaar. Houd de waardering!',
+  'pause.title': 'Gepauzeerd',
+  'pause.resume': 'Hervatten',
+  'pause.restart': 'Herstarten',
 } satisfies LocaleDict;

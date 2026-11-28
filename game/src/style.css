@@ -2566,28 +2566,83 @@ body {
   color: #fef08a;
 }
 
-/* ---- Compact 3-Step Visual Rule Strip on Title Screen ---- */
-.title-rules {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
-  margin: 0 auto 12px;
-  max-width: 650px;
+/* ---- Compact Minimal Title Icon Button, Micro Note & Pause Modal ---- */
+.title-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 2px solid rgba(148, 163, 184, 0.42);
+  background: rgba(30, 41, 59, 0.78);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.1s;
 }
 
-.title-rule-item {
-  display: flex;
+.title-icon-btn:hover {
+  border-color: #facc15;
+  color: #fef08a;
+  background: rgba(30, 41, 59, 0.94);
+  transform: translateY(-1px);
+}
+
+.title-actions .trophy-pill {
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 12.5px;
+}
+
+.title-micro-note {
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(148, 163, 184, 0.65);
+}
+
+.stage-card-minimal {
   align-items: center;
-  gap: 7px;
-  padding: 7px 9px;
-  border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.24);
-  background: rgba(15, 23, 42, 0.66);
-  color: #e2e8f0;
-  font-size: 11.5px;
-  font-weight: 700;
-  line-height: 1.3;
-  text-align: start;
+  justify-content: center;
+  text-align: center;
+  gap: 5px;
+  padding: 12px 10px;
+}
+
+.stage-card-minimal .stage-card-title {
+  justify-content: center;
+}
+
+.stage-card-minimal .stage-record {
+  font-size: 10.5px;
+  min-height: 15px;
+}
+
+.pause-card {
+  width: min(320px, calc(100% - 28px));
+  padding: 22px 20px;
+  text-align: center;
+}
+
+.pause-card h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #fef08a;
+}
+
+.pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pause-actions .primary-btn,
+.pause-actions .ghost-btn {
+  width: 100%;
+  justify-content: center;
 }
 
 /* ---- Sleek 18-Language Custom Trigger on Title Screen ---- */
@@ -4338,22 +4393,25 @@ body {
     font-size: 11.5px;
   }
 
-  .title-card .title-rules {
-    gap: 4px;
-    margin-bottom: 5px;
+  .title-card .title-icon-btn,
+  .title-card .title-actions .trophy-pill {
+    height: 30px;
+    border-radius: 9px;
   }
 
-  .title-card .title-rule-item {
-    padding: 3px 6px;
-    font-size: 9px;
-    line-height: 1.2;
-    border-radius: 7px;
+  .title-card .title-icon-btn {
+    width: 30px;
   }
 
   .title-card .title-lang-btn {
     height: 30px;
     padding: 0 9px;
     font-size: 11px;
+  }
+
+  .title-card .title-micro-note {
+    margin-top: 6px;
+    font-size: 9.5px;
   }
 
   .tutorial-card {

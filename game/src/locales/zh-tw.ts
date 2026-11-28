@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0 諷刺單機塔防 · 真零遙測',
   'title.name': 'Temu3 Kingdom',
   'title.sub': '零追蹤王國',
-  'title.desc': '屋頂高掛「No Telemetry」，地下管道卻全開。放行金主，攔住查程式碼的。',
+  'title.desc': '放行金主，攔住查程式碼的。',
   'title.play': '開始守城',
-  'title.footerWink': '僅存 LocalStorage · 零 PostHog · 這次真沒埋點',
+  'title.footerWink': 'CC0 · 這次真沒埋點',
   'title.langLabel': '語言',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': '派領主走位',
   'tut.s3b': '點路面派領主支援。貼著金色金主陪跑拿雙倍獎金還能擋砲。',
   'tut.s4t': '試試城堡技能',
-  'tut.s4b': '按 [1] 狂偷數據直接印鈔——盯緊上方警報條就行。',
+  'tut.s4b': '按 [1] 狂偷數據直接印鈔，盯緊上方警報條就行。',
   'tut.completeToast': '上手完成，守住估值！',
+  'pause.title': '已暫停',
+  'pause.resume': '繼續守城',
+  'pause.restart': '重開本關',
 } satisfies LocaleDict;

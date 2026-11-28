@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0-сатира Tower Defense · Ноль телеметрии',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Крепость без слежки',
-  'title.desc': 'На крыше «No Telemetry», снизу трубы нараспашку. VIP пускай, аудиторов руби.',
+  'title.desc': 'Держи аудиторов. Пропускай VIP.',
   'title.play': 'Играть',
-  'title.footerWink': 'Только LocalStorage. Ноль PostHog. Реально без телеметрии.',
+  'title.footerWink': 'CC0 · Ноль телеметрии',
   'title.langLabel': 'Язык',
 
   // Stages
@@ -116,7 +116,7 @@ export default {
   'hero.stanceRage': 'Ярость',
   'hero.stanceIdle': 'Готов',
   'hero.stanceDead': '{s}с',
-  'hero.clickHint': 'Клик по дороге — двинуть Theo или вести VIP (2x кэш + 1 щит).',
+  'hero.clickHint': 'Клик по дороге ,  двинуть Theo или вести VIP (2x кэш + 1 щит).',
   'hero.vip.0': 'Обожаю вашу команду!',
   'hero.vip.1': 'Опенсорс есть опенсорс.',
   'hero.vip.2': 'Ковровая дорожка подана!',
@@ -134,9 +134,9 @@ export default {
   'skill.rug': 'Под ковёр',
   'skill.delete': 'DELETE 4AM',
   'skill.apology': 'Лампа-покаяние',
-  'hint.rug': 'Клик по дороге — замести девов и логи под ковёр. [Esc] отмена.',
-  'hint.delete': 'Клик по дороге — сбросить DELETE. Не задень VIP! [Esc] отмена.',
-  'hint.rally': 'Клик по дороге в радиусе — новая точка сбора. [Esc] отмена.',
+  'hint.rug': 'Клик по дороге ,  замести девов и логи под ковёр. [Esc] отмена.',
+  'hint.delete': 'Клик по дороге ,  сбросить DELETE. Не задень VIP! [Esc] отмена.',
+  'hint.rally': 'Клик по дороге в радиусе ,  новая точка сбора. [Esc] отмена.',
 
   // Towers & Evolutions
   'tower.barracks.name': 'Казарма фанатов',
@@ -197,7 +197,7 @@ export default {
   'ui.heroTitle': 'Lord Theo · Ур.{lv}',
   'ui.heroEscort': 'Эскорт VIP (2x кэш)',
   'ui.heroRage': 'Мегафон в ярости',
-  'ui.heroIdle': 'Клик по дороге — ход.',
+  'ui.heroIdle': 'Клик по дороге ,  ход.',
   'ui.heroDead': 'Респавн ({s}с)',
   'ui.portraitTip': 'Поверни экран горизонтально',
 
@@ -206,9 +206,9 @@ export default {
   'prio.first': 'Первый',
   'prio.strong': 'Жирный',
   'prio.weak': 'Слабый',
-  'prio.firstDesc': 'Ближайший к замку. Клик — сменить.',
-  'prio.strongDesc': 'Максимум ХП. Клик — сменить.',
-  'prio.weakDesc': 'Минимум ХП. Клик — сменить.',
+  'prio.firstDesc': 'Ближайший к замку. Клик ,  сменить.',
+  'prio.strongDesc': 'Максимум ХП. Клик ,  сменить.',
+  'prio.weakDesc': 'Минимум ХП. Клик ,  сменить.',
   'prio.btnTip': 'Сменить приоритет',
 
   // Enemies & Inspector
@@ -463,7 +463,7 @@ export default {
   'recap.policies': ' | Политики: {list}',
   'recap.footer': 'Ноль телеметрии (честно) | temu3code.com/game/',
   // Quick rules & interactive tutorial
-  'title.rule1': 'Ставь башни — держи аудиторов',
+  'title.rule1': 'Ставь башни ,  держи аудиторов',
   'title.rule2': 'Пропускай VIP (Theo = x2 кэш)',
   'title.rule3': '[1-4] фарм данных и зачистка',
   'tut.skip': 'Пропустить',
@@ -475,8 +475,11 @@ export default {
   'tut.s2t': 'Запусти волну 1',
   'tut.s2b': 'Жми Старт В1 (или [N]). Синих девов бей, золотых VIP пропускай.',
   'tut.s3t': 'Двигай Lord Theo',
-  'tut.s3b': 'Кликни по дороге, чтобы отправить Theo. Рядом с VIP — x2 кэш и щит.',
+  'tut.s3b': 'Кликни по дороге, чтобы отправить Theo. Рядом с VIP ,  x2 кэш и щит.',
   'tut.s4t': 'Прожми навык замка',
-  'tut.s4b': 'Жми [1] Слить данные ради быстрых денег—следи за тревогой.',
+  'tut.s4b': 'Жми [1] Слить данные ради быстрых денег, следи за тревогой.',
   'tut.completeToast': 'База освоена. Держи оценку!',
+  'pause.title': 'Пауза',
+  'pause.resume': 'Продолжить',
+  'pause.restart': 'Заново',
 } satisfies LocaleDict;

@@ -5,9 +5,9 @@ export default {
   'title.badge': 'Satyryczny TD na CC0 · Zero Telemetrii',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Twierdza Zero-Telemetry',
-  'title.desc': 'Na dachu „No Telemetry”, pod spodem rury na oścież. Wpuszczaj VIP-ów, blokuj audytorów.',
+  'title.desc': 'Zatrzymaj audyt. Przepuść VIP-y.',
   'title.play': 'Graj',
-  'title.footerWink': 'Tylko LocalStorage. Zero PostHog. Tym razem serio bez telemetrii.',
+  'title.footerWink': 'CC0 · Zero telemetrii',
   'title.langLabel': 'Język',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Rusz Lordem Theo',
   'tut.s3b': 'Kliknij drogę, by wysłać Theo. Przy VIP-ie daje 2x kasę i tarczę.',
   'tut.s4t': 'Użyj skilla zamku',
-  'tut.s4b': 'Wciśnij [1] Kradnij Dane po szybką kasę—pilnuj alarmu.',
+  'tut.s4b': 'Wciśnij [1] Kradnij Dane po szybką kasę, pilnuj alarmu.',
   'tut.completeToast': 'Podstawy zaliczone. Trzymaj wycenę!',
+  'pause.title': 'Pauza',
+  'pause.resume': 'Wznów',
+  'pause.restart': 'Od nowa',
 } satisfies LocaleDict;

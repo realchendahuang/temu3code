@@ -5,9 +5,9 @@ export default {
   'title.badge': 'Tower Defense Satirico CC0 · Zero Telemetria',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Fortezza Zero Telemetria',
-  'title.desc': '"No Telemetry" sul tetto. Tubi spalancati sotto. Fai passare i VIP. Ferma gli auditor.',
+  'title.desc': 'Ferma gli auditor. Fai passare i VIP.',
   'title.play': 'Gioca',
-  'title.footerWink': 'Solo LocalStorage. Zero PostHog. Davvero nessuna telemetria.',
+  'title.footerWink': 'CC0 · Zero telemetria',
   'title.langLabel': 'Lingua',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Muovi Lord Theo',
   'tut.s3b': 'Clicca la strada per spostare Theo. Accanto ai VIP: 2x oro e scudo.',
   'tut.s4t': 'Usa una skill',
-  'tut.s4b': 'Premi [1] Ruba Dati per cassa rapida—occhio all\'allarme.',
+  'tut.s4b': 'Premi [1] Ruba Dati per cassa rapida, occhio all\'allarme.',
   'tut.completeToast': 'Basi fatte. Reggi la valutazione!',
+  'pause.title': 'In pausa',
+  'pause.resume': 'Riprendi',
+  'pause.restart': 'Ricomincia',
 } satisfies LocaleDict;

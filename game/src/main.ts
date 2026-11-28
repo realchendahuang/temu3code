@@ -142,13 +142,18 @@ const cdDelete = document.getElementById('cd-delete') as HTMLSpanElement;
 const cdHero = document.getElementById('cd-hero') as HTMLSpanElement;
 
 const overlayTitle = document.getElementById('overlay-title') as HTMLDivElement;
+const overlayPause = document.getElementById('overlay-pause') as HTMLDivElement;
 const overlayHelp = document.getElementById('overlay-help') as HTMLDivElement;
 const overlayPolicy = document.getElementById('overlay-policy') as HTMLDivElement;
 const overlayResult = document.getElementById('overlay-result') as HTMLDivElement;
 const stagePicker = document.getElementById('stage-picker') as HTMLDivElement;
 const difficultyPicker = document.getElementById('difficulty-picker') as HTMLDivElement;
-const difficultyTip = document.getElementById('difficulty-tip') as HTMLDivElement;
 const diffPillBtns = Array.from(difficultyPicker.querySelectorAll<HTMLButtonElement>('.diff-pill'));
+const btnTitleHelp = document.getElementById('btn-title-help') as HTMLButtonElement;
+const btnPauseResume = document.getElementById('btn-pause-resume') as HTMLButtonElement;
+const btnPauseRestart = document.getElementById('btn-pause-restart') as HTMLButtonElement;
+const btnPauseStages = document.getElementById('btn-pause-stages') as HTMLButtonElement;
+const btnPauseTutorial = document.getElementById('btn-pause-tutorial') as HTMLButtonElement;
 const tabHelpGuide = document.getElementById('tab-help-guide') as HTMLButtonElement;
 const tabHelpCodex = document.getElementById('tab-help-codex') as HTMLButtonElement;
 const tabHelpAchievements = document.getElementById('tab-help-achievements') as HTMLButtonElement;
@@ -161,7 +166,6 @@ const helpHotkeys = document.getElementById('help-hotkeys') as HTMLDivElement;
 const codexContent = document.getElementById('codex-content') as HTMLDivElement;
 const achievementsContent = document.getElementById('achievements-content') as HTMLDivElement;
 const policyChoicesEl = document.getElementById('policy-choices') as HTMLDivElement;
-const bestRecordText = document.getElementById('best-record-text') as HTMLSpanElement;
 const btnTitleAchievements = document.getElementById('btn-title-achievements') as HTMLButtonElement;
 const titleAchCount = document.getElementById('title-ach-count') as HTMLSpanElement;
 const btnLangTitle = document.getElementById('btn-lang-title') as HTMLButtonElement;
@@ -185,6 +189,7 @@ const btnBackSite = document.getElementById('btn-back-site') as HTMLAnchorElemen
 
 const RTL_TEXT_CONTAINERS: HTMLElement[] = [
   overlayTitle,
+  overlayPause,
   overlayPolicy,
   overlayHelp,
   overlayResult,
@@ -209,11 +214,6 @@ const STAGE_ICON_COLORS: Record<StageId, string> = {
   meadow: 'ico-emerald',
   bridge: 'ico-amber',
   furnace: 'ico-cyan',
-};
-const DIFF_ICONS: Record<Difficulty, { ico: IconName; cls: string }> = {
-  normal: { ico: 'scale', cls: 'ico-cyan' },
-  crunch: { ico: 'flame', cls: 'ico-amber' },
-  gdpr: { ico: 'shield', cls: 'ico-gold' },
 };
 const BRANCH_ICONS: Record<TowerBaseType, { a: { ico: IconName; cls: string }; b: { ico: IconName; cls: string } }> = {
   barracks: {
@@ -616,12 +616,12 @@ function getStageStartGold(stageId: StageId, diff: Difficulty): number {
   return Math.max(150, stage.startingGold + delta);
 }
 
-function updateDifficultyTip(diff: Difficulty = selectedDifficulty): void {
-  const di = DIFF_ICONS[diff];
-  const text = t(engine.lang, `diff.${diff}Tip`, {
-    g: getStageStartGold(selectedStageId, diff),
-  });
-  difficultyTip.innerHTML = `${iconSvg(di.ico, { size: 13, className: di.cls })}<span>${escapeHtml(text)}</span>`;
+function updateDifficultyTip(_diff: Difficulty = selectedDifficulty): void {
+  for (const btn of diffPillBtns) {
+    const d = btn.dataset.diff as Difficulty | undefined;
+    if (!d) continue;
+    btn.title = t(engine.lang, `diff.${d}Tip`, { g: getStageStartGold(selectedStageId, d) });
+  }
 }
 
 function isStageCleared(id: StageId): boolean {
@@ -639,33 +639,12 @@ function isTrilogyComplete(): boolean {
 }
 
 function updateTitleBestRecord(): void {
-  const lang = engine.lang;
-  const best = loadStageBestRecord(selectedStageId);
-  const trilogyDone = isTrilogyComplete();
-  if (!best && !trilogyDone) {
-    bestRecordText.textContent = '';
-    bestRecordText.classList.add('hidden');
-    return;
-  }
-  bestRecordText.classList.remove('hidden');
-  const baseText = best
-    ? t(lang, 'stage.bestRecord', { w: best.wave, s: best.stars })
-    : '';
-  if (trilogyDone) {
-    const trilogyText = t(lang, 'stage.trilogyCleared', {
-      done: STAGE_ORDER.length,
-      total: STAGE_ORDER.length,
-    });
-    const prefix = baseText ? `${escapeHtml(baseText)} · ` : '';
-    bestRecordText.innerHTML = `${prefix}<span class="title-trilogy-inline">${iconSvg('crown', { size: 13, className: 'ico-gold' })}<span>${escapeHtml(trilogyText)}</span></span>`;
-  } else {
-    bestRecordText.textContent = baseText;
-  }
+  // Stage progress stars/best-wave live cleanly inside each minimal stage card
 }
 
 function renderStagePicker(): void {
   const lang = engine.lang;
-  const cardsHtml = STAGE_ORDER.map((id, idx) => {
+  const cardsHtml = STAGE_ORDER.map((id) => {
     const cfg = getStageConfig(id);
     const isActive = id === selectedStageId;
     const icoName = STAGE_ICONS[id] ?? 'map';
@@ -675,10 +654,10 @@ function renderStagePicker(): void {
     const best = loadStageBestRecord(id);
     const totalWaves = cfg.waves.length;
 
-    let recordHtml: string;
-    let recordCls: string;
+    let recordHtml = '';
+    let recordCls = 'is-empty';
     if (best && best.wave >= totalWaves && best.stars > 0) {
-      const starsHtml = renderStarsSvg(best.stars, 3, 10);
+      const starsHtml = renderStarsSvg(best.stars, 3, 11);
       recordHtml =
         best.wave > totalWaves
           ? `${starsHtml} · ${iconSvg('infinity', { size: 11, className: 'ico-cyan' })}${escapeHtml(t(lang, 'canvas.waveFmt', { n: best.wave }))}`
@@ -687,34 +666,24 @@ function renderStagePicker(): void {
     } else if (best && best.wave > 0) {
       recordHtml = escapeHtml(t(lang, 'stage.bestWave', { w: best.wave }));
       recordCls = 'is-progress';
-    } else {
-      recordHtml = escapeHtml(t(lang, 'stage.notCleared'));
-      recordCls = 'is-empty';
     }
 
     const goldVal = getStageStartGold(id, selectedDifficulty);
 
     return `
       <button
-        class="stage-card${isActive ? ' active' : ''}"
+        class="stage-card stage-card-minimal${isActive ? ' active' : ''}"
         type="button"
         role="radio"
         aria-checked="${isActive ? 'true' : 'false'}"
         data-stage="${id}"
-        title="${escapeHtml(name)} — ${escapeHtml(tag)}"
+        title="${escapeHtml(name)} (${escapeHtml(tag)}, $${goldVal})"
       >
-        <div class="stage-card-top">
-          <span class="stage-num-pill">${escapeHtml(t(lang, 'stage.num', { n: idx + 1 }))}</span>
-          <span class="stage-record ${recordCls}">${recordHtml}</span>
-        </div>
         <div class="stage-card-title">
-          <span class="stage-card-ico ${icoCls}">${iconSvg(icoName, { size: 15 })}</span>
+          <span class="stage-card-ico ${icoCls}">${iconSvg(icoName, { size: 16 })}</span>
           <span class="stage-card-title-name">${escapeHtml(name)}</span>
         </div>
-        <div class="stage-card-meta">
-          <span class="stage-meta-tag is-accent">${escapeHtml(tag)}</span>
-          <span class="stage-meta-gold">${iconSvg('coins', { size: 11, className: 'ico-gold' })} ${goldVal}$</span>
-        </div>
+        ${recordHtml ? `<span class="stage-record ${recordCls}">${recordHtml}</span>` : ''}
       </button>`;
   }).join('');
 
@@ -919,6 +888,8 @@ function applyLanguage(): void {
   btnMusic.title = t(lang, 'hud.musicTip');
   btnMute.title = t(lang, 'hud.muteTip');
   btnHelp.title = t(lang, 'hud.helpTip');
+  btnTitleHelp.title = t(lang, 'hud.helpTip');
+  btnTitleHelp.setAttribute('aria-label', t(lang, 'hud.helpTip'));
   btnSkillSteal.title = t(lang, 'skill.steal');
   btnSkillRug.title = t(lang, 'skill.rug');
   btnSkillDelete.title = t(lang, 'skill.delete');
@@ -3101,6 +3072,31 @@ function pingAndInspectHero(): void {
   showHeroInspector();
 }
 
+// Right-click canvas shortcut: cancel targeting / close radial / move Theo directly (no browser context menu)
+canvas.addEventListener('contextmenu', (ev) => {
+  ev.preventDefault();
+  if (!started || engine.gameOver) return;
+  if (!overlayPolicy.classList.contains('hidden') || !overlayHelp.classList.contains('hidden') || !overlayPause.classList.contains('hidden')) {
+    return;
+  }
+  if (ui.targetingMode !== 'none') {
+    cancelTargeting();
+    return;
+  }
+  if (ui.selectedPadId) {
+    closeRadialMenu();
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return;
+  const x = ((ev.clientX - rect.left) / rect.width) * LOGICAL_W;
+  const y = ((ev.clientY - rect.top) / rect.height) * LOGICAL_H;
+  clearSelectedEntity();
+  inspectorCard.classList.add('hidden');
+  engine.moveHeroTo(x, y);
+  notifyTutorialEvent('hero');
+});
+
 // Prevent pointerdown on HUD controls, tutorial coachmark & language popover from bleeding to canvas
 for (const el of [hudTop, hudBottom, tutorialCard, langPopover]) {
   el.addEventListener('pointerdown', (ev) => {
@@ -3186,6 +3182,11 @@ tabHelpAchievements.addEventListener('click', () => setHelpTab('achievements'));
 btnTitleAchievements.addEventListener('click', () => {
   audioExt.inspect?.();
   openHelpModal('achievements');
+});
+
+btnTitleHelp.addEventListener('click', () => {
+  audioExt.inspect?.();
+  openHelpModal('guide');
 });
 
 achievementsContent.addEventListener('click', (ev) => {
@@ -3337,9 +3338,44 @@ btnSpeed.addEventListener('click', () => {
   refreshHud();
 });
 
-btnPause.addEventListener('click', () => {
-  engine.paused = !engine.paused;
+function setPausedMenu(open: boolean): void {
+  if (!started || engine.gameOver) {
+    overlayPause.classList.add('hidden');
+    return;
+  }
+  engine.paused = open;
+  overlayPause.classList.toggle('hidden', !open);
+  if (open) {
+    closeLangPopover(false);
+    closeRadialMenu();
+    cancelTargeting();
+  }
   refreshHud();
+}
+
+btnPause.addEventListener('click', () => {
+  if (!started || engine.gameOver || !overlayPolicy.classList.contains('hidden')) return;
+  setPausedMenu(!engine.paused);
+});
+
+btnPauseResume.addEventListener('click', () => {
+  setPausedMenu(false);
+});
+
+btnPauseRestart.addEventListener('click', () => {
+  overlayPause.classList.add('hidden');
+  restartCurrentStage(true);
+});
+
+btnPauseStages.addEventListener('click', () => {
+  overlayPause.classList.add('hidden');
+  engine.paused = false;
+  btnStageSelect.click();
+});
+
+btnPauseTutorial.addEventListener('click', () => {
+  setPausedMenu(false);
+  startTutorial(true);
 });
 
 btnRestart.addEventListener('click', () => {
@@ -3528,6 +3564,10 @@ window.addEventListener('keydown', (ev) => {
   }
 
   if (key === 'Escape') {
+    if (!overlayPause.classList.contains('hidden')) {
+      setPausedMenu(false);
+      return;
+    }
     disarmRestart();
     cancelTargeting();
     closeRadialMenu();
@@ -3562,8 +3602,7 @@ window.addEventListener('keydown', (ev) => {
   } else if (key === ' ') {
     if (!ev.repeat) {
       ev.preventDefault();
-      engine.paused = !engine.paused;
-      refreshHud();
+      setPausedMenu(!engine.paused);
     }
   } else if (lower === 'f') {
     if (!ev.repeat) {

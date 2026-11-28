@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0-Satire Tower Defense · Null Telemetrie',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Null-Telemetrie-Festung',
-  'title.desc': '"No Telemetry" auf dem Dach. Rohre unten sperrangelweit auf. VIPs reinlassen. Auditoren blocken.',
+  'title.desc': 'Prüfer stoppen. VIPs durchlassen.',
   'title.play': 'Spielen',
-  'title.footerWink': 'Nur LocalStorage. Kein PostHog. Diesmal wirklich keine Telemetrie.',
+  'title.footerWink': 'CC0 · Null Telemetrie',
   'title.langLabel': 'Sprache',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Lord Theo bewegen',
   'tut.s3b': 'Klick auf die Straße für Theo. Neben VIPs gibt es 2x Geld & Schild.',
   'tut.s4t': 'Burg-Skill testen',
-  'tut.s4b': '[1] Datenklau bringt sofort Cash—behalt den Leak-Alarm im Blick.',
+  'tut.s4b': '[1] Datenklau bringt sofort Cash, behalt den Leak-Alarm im Blick.',
   'tut.completeToast': 'Alles klar. Halt die Bewertung!',
+  'pause.title': 'Pausiert',
+  'pause.resume': 'Weiter',
+  'pause.restart': 'Neu starten',
 } satisfies LocaleDict;

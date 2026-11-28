@@ -179,30 +179,15 @@
       <!-- Custom 18-Language Dark Popover (shared by Title & HUD triggers) -->
       <div id="lang-popover" class="lang-popover hidden" role="listbox" aria-label="Language"></div>
 
-      <!-- Title Overlay (unhidden after initial locale loads cleanly) -->
+      <!-- Title Overlay (minimal, airy game start screen) -->
       <div id="overlay-title" class="overlay hidden">
         <div class="modal-card title-card">
-          <div class="parody-badge" data-i18n="title.badge">CC0 Satire Tower Defense · Zero Telemetry</div>
           <h1 class="game-title">
             <span class="title-main" data-i18n="title.name">Temu3 Kingdom</span>
           </h1>
           <p class="title-desc" data-i18n="title.desc">
-            "No Telemetry" on the roof. Pipes wide open below. Let VIPs in. Block the auditors.
+            Block the auditors. Let VIPs in.
           </p>
-          <div class="title-rules" aria-label="Quick Rules">
-            <div class="title-rule-item">
-              <span class="title-rule-ico ico-cyan" data-icon="hammer" data-icon-size="14"></span>
-              <span data-i18n="title.rule1">Tap pads to build &amp; block auditors</span>
-            </div>
-            <div class="title-rule-item">
-              <span class="title-rule-ico ico-gold" data-icon="crown" data-icon-size="14"></span>
-              <span data-i18n="title.rule2">Let Golden VIPs pass (Theo = 2x cash)</span>
-            </div>
-            <div class="title-rule-item">
-              <span class="title-rule-ico ico-purple" data-icon="database" data-icon-size="14"></span>
-              <span data-i18n="title.rule3">Fire [1-4] skills to farm &amp; wipe leaks</span>
-            </div>
-          </div>
           <div class="stage-picker" id="stage-picker" role="radiogroup" aria-label="Campaign Stage"></div>
           <div class="difficulty-picker" id="difficulty-picker" role="radiogroup" aria-label="Difficulty">
             <div class="diff-pills">
@@ -219,7 +204,6 @@
                 <span data-i18n="diff.gdpr">GDPR Hell</span>
               </button>
             </div>
-            <div class="diff-tip" id="difficulty-tip"></div>
           </div>
           <div class="title-actions">
             <button class="primary-btn" id="btn-start-game" type="button" data-i18n="title.play">Play</button>
@@ -228,14 +212,25 @@
               <span class="title-lang-name" id="title-lang-name">English</span>
               <span class="title-lang-chev" data-icon="chevronDown" data-icon-size="13"></span>
             </button>
-          </div>
-          <div class="title-footer">
+            <button class="title-icon-btn" id="btn-title-help" type="button" aria-label="Rules" title="Rules" data-icon="helpCircle" data-icon-size="17"></button>
             <button class="trophy-pill" id="btn-title-achievements" type="button" title="Medals">
               <span class="trophy-pill-ico ico-gold" data-icon="trophy" data-icon-size="13"></span>
               <span id="title-ach-count" dir="ltr">0 / 10</span>
             </button>
-            <span id="best-record-text" class="hidden"></span>
-            <span class="title-footer-tagline" data-i18n="title.footerWink">LocalStorage only. Zero PostHog. Actually no telemetry.</span>
+          </div>
+          <div class="title-micro-note" data-i18n="title.footerWink">CC0 · Zero Telemetry</div>
+        </div>
+      </div>
+
+      <!-- Compact In-Game Pause Menu -->
+      <div id="overlay-pause" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-modal-title">
+        <div class="modal-card pause-card">
+          <h2 id="pause-modal-title" data-i18n="pause.title">Paused</h2>
+          <div class="pause-actions">
+            <button class="primary-btn" id="btn-pause-resume" type="button" data-i18n="pause.resume">Resume</button>
+            <button class="ghost-btn" id="btn-pause-restart" type="button" data-i18n="pause.restart">Restart Stage</button>
+            <button class="ghost-btn" id="btn-pause-stages" type="button" data-i18n="result.stages">Stages</button>
+            <button class="ghost-btn" id="btn-pause-tutorial" type="button" data-i18n="tut.replay">Replay Tutorial</button>
           </div>
         </div>
       </div>

@@ -217,6 +217,27 @@ interface LaserTracer {
   crit: boolean;
 }
 
+interface DyingUnit {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  rot: number;
+  vrot: number;
+  key: AssetKey;
+  spriteW: number;
+  facing: number;
+  isBoss: boolean;
+  life: number;
+  maxLife: number;
+}
+
+interface TowerPopAnim {
+  age: number;
+  duration: number;
+  isUpgrade: boolean;
+}
+
 interface TrackedProjectile {
   kind: Projectile['kind'];
   startX: number;
@@ -612,6 +633,13 @@ export class GameRenderer {
   private sparks: RendererSpark[] = [];
   private laserTracers: LaserTracer[] = [];
   private prevStepHalf = new Map<string, number>();
+  private prevEnemiesSnap = new Map<
+    number,
+    { x: number; y: number; kind: Enemy['kind']; isBoss: boolean; facing: number; radius: number }
+  >();
+  private dyingUnits: DyingUnit[] = [];
+  private seenTowerLevels = new Map<number, number>();
+  private towerPops = new Map<number, TowerPopAnim>();
 
   // Victory fireworks & Defeat ember stage-end FX state (ticks on wall clock so modals stay alive)
   private stageFxMode: 'none' | 'victory' | 'defeat' = 'none';
@@ -1260,6 +1288,10 @@ export class GameRenderer {
       this.sparks = [];
       this.laserTracers = [];
       this.prevStepHalf.clear();
+      this.prevEnemiesSnap.clear();
+      this.dyingUnits = [];
+      this.seenTowerLevels.clear();
+      this.towerPops.clear();
       this.lastEngineTime = engine.time;
       return;
     }
@@ -1319,9 +1351,108 @@ export class GameRenderer {
         }
       }
       this.prevEnemyFlash.set(e.id, e.hitFlash);
+      this.prevEnemiesSnap.set(e.id, {
+        x: e.x,
+        y: e.y,
+        kind: e.kind,
+        isBoss: e.isBoss,
+        facing: e.facing ?? 1,
+        radius: e.radius,
+      });
     }
-    for (const id of this.prevEnemyFlash.keys()) {
-      if (!activeEnemyIds.has(id)) this.prevEnemyFlash.delete(id);
+    const castleGateX = engine.getStage().castlePos.x - 42;
+    for (const [id, snap] of this.prevEnemiesSnap.entries()) {
+      if (!activeEnemyIds.has(id)) {
+        this.prevEnemiesSnap.delete(id);
+        this.prevEnemyFlash.delete(id);
+        // Spawn knockback spin + comic puff for defeated enemies (skip enemies that reached castle gate)
+        if (snap.x < castleGateX) {
+          const spriteW = snap.isBoss ? 92 : snap.kind === 'auditor' || snap.kind === 'veteran' ? 54 : 46;
+          this.dyingUnits.push({
+            x: snap.x,
+            y: snap.y,
+            vx: -snap.facing * (snap.isBoss ? 22 : 46 + Math.random() * 24),
+            vy: snap.isBoss ? -52 : -88 - Math.random() * 28,
+            rot: 0,
+            vrot: -snap.facing * (snap.isBoss ? 2.8 : 7.5),
+            key: `enemy-${snap.kind}` as AssetKey,
+            spriteW,
+            facing: snap.facing,
+            isBoss: snap.isBoss,
+            life: snap.isBoss ? 0.65 : 0.3,
+            maxLife: snap.isBoss ? 0.65 : 0.3,
+          });
+          const puffCount = snap.isBoss ? 14 : 5;
+          for (let i = 0; i < puffCount; i++) {
+            const ang = (Math.PI * 2 * i) / puffCount + (Math.random() - 0.5) * 0.45;
+            const spd = (snap.isBoss ? 80 : 35) + Math.random() * (snap.isBoss ? 110 : 50);
+            this.pushSpark({
+              x: snap.x + (Math.random() - 0.5) * 10,
+              y: snap.y - (snap.isBoss ? 30 : 14),
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd - 20,
+              size: (snap.isBoss ? 7 : 4.5) + Math.random() * 3,
+              color: snap.isBoss && i % 2 === 0 ? '#fde047' : 'rgba(241, 245, 249, 0.85)',
+              life: snap.isBoss ? 0.5 : 0.28,
+              maxLife: snap.isBoss ? 0.5 : 0.28,
+              kind: snap.isBoss && i % 2 === 0 ? 'star' : 'smoke',
+            });
+          }
+        }
+      }
+    }
+
+    // Step dying unit knockback ghosts
+    if (dt > 0 && this.dyingUnits.length > 0) {
+      const aliveGhosts: DyingUnit[] = [];
+      for (const d of this.dyingUnits) {
+        d.life -= dt;
+        if (d.life <= 0) continue;
+        d.x += d.vx * dt;
+        d.y += d.vy * dt;
+        d.vy += (d.isBoss ? 160 : 340) * dt;
+        d.rot += d.vrot * dt;
+        aliveGhosts.push(d);
+      }
+      this.dyingUnits = aliveGhosts;
+    }
+
+    // Track fresh tower builds & upgrades for elastic drop-in bounce + dust puff
+    const activeTowerIds = new Set<number>();
+    for (const tw of engine.towers) {
+      activeTowerIds.add(tw.id);
+      const prevLv = this.seenTowerLevels.get(tw.id);
+      if (prevLv === undefined || tw.level > prevLv) {
+        const isUpgrade = prevLv !== undefined;
+        this.seenTowerLevels.set(tw.id, tw.level);
+        this.towerPops.set(tw.id, { age: 0, duration: isUpgrade ? 0.36 : 0.28, isUpgrade });
+        const cnt = isUpgrade ? 9 : 6;
+        for (let i = 0; i < cnt; i++) {
+          const ang = (Math.PI * 2 * i) / cnt;
+          const spd = (isUpgrade ? 48 : 34) + Math.random() * 24;
+          this.pushSpark({
+            x: tw.x + Math.cos(ang) * 14,
+            y: tw.y + 8 + Math.sin(ang) * 6,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd * 0.45 - (isUpgrade ? 26 : 12),
+            size: isUpgrade ? 5.2 : 4.4,
+            color: isUpgrade ? '#fde047' : 'rgba(226, 214, 185, 0.85)',
+            life: isUpgrade ? 0.38 : 0.26,
+            maxLife: isUpgrade ? 0.38 : 0.26,
+            kind: isUpgrade && i % 2 === 0 ? 'star' : 'smoke',
+          });
+        }
+      }
+    }
+    for (const id of this.seenTowerLevels.keys()) {
+      if (!activeTowerIds.has(id)) {
+        this.seenTowerLevels.delete(id);
+        this.towerPops.delete(id);
+      }
+    }
+    for (const [id, pop] of this.towerPops.entries()) {
+      pop.age += wallDt;
+      if (pop.age >= pop.duration) this.towerPops.delete(id);
     }
 
     // Track projectiles to spawn crisp sniper laser afterimages & mortar burst puffs on completion
@@ -1500,6 +1631,7 @@ export class GameRenderer {
 
     drawables.sort((a, b) => a.y - b.y);
     for (const item of drawables) item.draw();
+    this.drawDyingUnits();
 
     this.drawSuctionBeams(engine);
     this.drawSniperSightlines(engine);
@@ -2589,6 +2721,45 @@ export class GameRenderer {
       }
       ctx.restore();
     };
+
+    // Directional flowing chevron arrows along active paths between waves (zero-text path readability!)
+    if (!engine.waveActive) {
+      const unlockWave1 = stage.entryMarkers[1]?.unlockWave ?? 3;
+      const nextWaveNum = Math.max(1, engine.waveIndex + 2);
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      for (let laneIdx = 0; laneIdx < stage.sampledPaths.length; laneIdx++) {
+        const laneOpen = laneIdx === 0 || nextWaveNum >= unlockWave1;
+        const laneSoon = laneIdx === 1 && nextWaveNum + 1 === unlockWave1;
+        if (!laneOpen && !laneSoon) continue;
+        const path = stage.sampledPaths[laneIdx];
+        const spacing = 115;
+        const shift = (animT * 52) % spacing;
+        const alpha = laneOpen ? 0.52 : 0.24;
+        ctx.strokeStyle = isFurnace
+          ? `rgba(103, 232, 249, ${alpha})`
+          : `rgba(254, 240, 138, ${alpha})`;
+        ctx.lineWidth = 2.6;
+        for (let d = 55 + shift; d < path.totalLength - 75; d += spacing) {
+          let i = 0;
+          while (i < path.cumDist.length - 2 && path.cumDist[i] < d) i++;
+          const pt = path.points[i];
+          const nx = path.points[Math.min(path.points.length - 1, i + 2)];
+          const ang = Math.atan2(nx.y - pt.y, nx.x - pt.x);
+          ctx.save();
+          ctx.translate(pt.x, pt.y);
+          ctx.rotate(ang);
+          ctx.beginPath();
+          ctx.moveTo(-6, -5.5);
+          ctx.lineTo(4, 0);
+          ctx.lineTo(-6, 5.5);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+      ctx.restore();
+    }
 
     if (isFurnace) {
       // Subtle animated centerline data bus pulse
@@ -5219,11 +5390,33 @@ export class GameRenderer {
     const img = assets.get(key);
     const { w, h } = this.getTowerSpriteSize(tw, img);
     const sizeScale = tw.level === 1 ? 0.92 : tw.level === 2 ? 1.0 : 1.08;
-    const scaleX = (1 + tw.recoil * 0.1) * sizeScale;
-    const scaleY = (1 - tw.recoil * 0.08) * sizeScale;
+    const pop = this.towerPops.get(tw.id);
+    let popSx = 1;
+    let popSy = 1;
+    let popDy = 0;
+    let upgradeBeamAlpha = 0;
+    if (pop) {
+      const p = Math.min(1, pop.age / pop.duration);
+      const bounce = Math.sin(p * Math.PI) * (1 - p * 0.45);
+      popSx = 1 + bounce * 0.16;
+      popSy = 1 - bounce * 0.14 + (p < 0.35 ? (0.35 - p) * 0.5 : 0);
+      popDy = p < 0.32 ? -((0.32 - p) / 0.32) * 16 : 0;
+      if (pop.isUpgrade) upgradeBeamAlpha = Math.sin(p * Math.PI) * 0.65;
+    }
+    const scaleX = (1 + tw.recoil * 0.1) * sizeScale * popSx;
+    const scaleY = (1 - tw.recoil * 0.08) * sizeScale * popSy;
 
     ctx.save();
     ctx.translate(tw.x, tw.y);
+
+    if (upgradeBeamAlpha > 0.02) {
+      const beamG = ctx.createLinearGradient(0, -110, 0, 12);
+      beamG.addColorStop(0, 'rgba(254, 240, 138, 0)');
+      beamG.addColorStop(0.55, `rgba(250, 204, 21, ${upgradeBeamAlpha * 0.42})`);
+      beamG.addColorStop(1, `rgba(254, 249, 195, ${upgradeBeamAlpha * 0.72})`);
+      ctx.fillStyle = beamG;
+      ctx.fillRect(-26 * sizeScale, -110, 52 * sizeScale, 122);
+    }
 
     // Stage 3: Subtle dark-blue rim light behind tower silhouette & base
     if (isFurnace) {
@@ -5246,8 +5439,9 @@ export class GameRenderer {
       this.drawTowerLv3GroundAura(tw, engine, sizeScale);
     }
 
-    // Tower body transform (squash-and-stretch recoil + level scale)
+    // Tower body transform (squash-and-stretch recoil + elastic pop-in + level scale)
     ctx.save();
+    ctx.translate(0, popDy);
     ctx.scale(scaleX, scaleY);
 
     if (tw.level === 3) {
@@ -6298,6 +6492,37 @@ export class GameRenderer {
     ctx.fill();
     ctx.stroke();
     ctx.restore();
+  }
+
+  private drawDyingUnits(): void {
+    if (this.dyingUnits.length === 0) return;
+    const ctx = this.ctx;
+    for (const d of this.dyingUnits) {
+      const ratio = Math.max(0, Math.min(1, d.life / d.maxLife));
+      const img = assets.get(d.key);
+      ctx.save();
+      ctx.translate(d.x, d.y);
+      if (d.isBoss) {
+        const ringR = (1 - ratio) * 95 + 16;
+        ctx.strokeStyle = `rgba(250, 204, 21, ${ratio * 0.85})`;
+        ctx.lineWidth = 4 * ratio + 1;
+        ctx.beginPath();
+        ctx.arc(0, -28, ringR, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = Math.min(1, ratio * 1.45);
+      ctx.rotate(d.rot);
+      const shrink = 0.65 + ratio * 0.35;
+      ctx.scale(d.facing < 0 ? -shrink : shrink, shrink);
+      if (img) {
+        const h = (img.height / img.width) * d.spriteW;
+        ctx.drawImage(img, -d.spriteW / 2, 7 - h, d.spriteW, h);
+        if (ratio > 0.6) {
+          this.drawHitFlashOverlay(d.key, img, -d.spriteW / 2, 7 - h, d.spriteW, h, 0.9, 0.2);
+        }
+      }
+      ctx.restore();
+    }
   }
 
   private drawHero(engine: GameEngine): void {

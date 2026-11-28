@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0 풍자 타워 디펜스 · 텔레메트리 없음',
   'title.name': 'Temu3 Kingdom',
   'title.sub': '무추적 요새',
-  'title.desc': '지붕엔 "No Telemetry" 간판, 지하 파이프는 활짝. VIP는 모시고 감사관은 막아라.',
+  'title.desc': '감사관은 막고, VIP만 통과.',
   'title.play': '플레이',
-  'title.footerWink': 'LocalStorage만 사용. PostHog 제로. 진짜 추적 없음.',
+  'title.footerWink': 'CC0 · 텔레메트리 없음',
   'title.langLabel': '언어',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Theo 이동',
   'tut.s3b': '길을 눌러 Theo를 보내세요. 골드 VIP 옆을 지키면 2배 보상+방패.',
   'tut.s4t': '성 스킬 쓰기',
-  'tut.s4b': '[1] 데이터 수집으로 즉시 현금 확보—유출 경보만 조심하세요.',
+  'tut.s4b': '[1] 데이터 수집으로 즉시 현금 확보, 유출 경보만 조심하세요.',
   'tut.completeToast': '기본 끝! 기업가치를 지키세요!',
+  'pause.title': '일시정지',
+  'pause.resume': '계속하기',
+  'pause.restart': '다시 시작',
 } satisfies LocaleDict;

@@ -5,9 +5,9 @@ export default {
   'title.badge': 'دفاع أبراج ساخر CC0 · صفر تتبع',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'قلعة بلا تتبع',
-  'title.desc': 'لافتة "No Telemetry" فوق السطح، والمواسير مفتوحة تحت. مرّر الـ VIP واصدّ المدققين.',
+  'title.desc': 'أوقف المدققين، ومرّر كبار VIP.',
   'title.play': 'العب',
-  'title.footerWink': 'حفظ LocalStorage فقط. صفر PostHog. فعلاً بلا تتبع.',
+  'title.footerWink': 'CC0 · صفر تتبع',
   'title.langLabel': 'اللغة',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'حرّك اللورد ثيو',
   'tut.s3b': 'اضغط الطريق لتحريك ثيو. مرافقة VIP تمنح ضعف المال ودرعاً.',
   'tut.s4t': 'جرّب مهارة القلعة',
-  'tut.s4b': 'اضغط [1] شفط البيانات لمال فوري—راقب مؤشر الإنذار.',
+  'tut.s4b': 'اضغط [1] شفط البيانات لمال فوري, راقب مؤشر الإنذار.',
   'tut.completeToast': 'انتهى الشرح. حافظ على التقييم!',
+  'pause.title': 'متوقف مؤقتاً',
+  'pause.resume': 'استئناف',
+  'pause.restart': 'إعادة المرحلة',
 } satisfies LocaleDict;

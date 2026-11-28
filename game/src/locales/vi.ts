@@ -5,9 +5,9 @@ export default {
   'title.badge': 'Thủ Thành Châm Biếm CC0 · Không Theo Dõi',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Pháo Đài Không Theo Dõi',
-  'title.desc': 'Mái treo biển "No Telemetry", ống ngầm mở toang. Cho VIP qua, chặn dân soi code.',
+  'title.desc': 'Chặn kiểm toán. Thả VIP vào.',
   'title.play': 'Chơi',
-  'title.footerWink': 'Chỉ lưu LocalStorage. Không PostHog. Không theo dõi thật.',
+  'title.footerWink': 'CC0 · Không theo dõi',
   'title.langLabel': 'Ngôn ngữ',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Điều khiển Lord Theo',
   'tut.s3b': 'Bấm lên đường để điều Theo. Đi cạnh VIP vàng nhận x2 tiền & 1 khiên.',
   'tut.s4t': 'Thử kỹ năng thành',
-  'tut.s4b': 'Nhấn [1] Hút Data để in tiền ngay—nhớ canh thanh báo động.',
+  'tut.s4b': 'Nhấn [1] Hút Data để in tiền ngay, nhớ canh thanh báo động.',
   'tut.completeToast': 'Xong cơ bản. Giữ vững định giá!',
+  'pause.title': 'Tạm dừng',
+  'pause.resume': 'Tiếp tục',
+  'pause.restart': 'Chơi lại',
 } satisfies LocaleDict;

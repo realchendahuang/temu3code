@@ -5,9 +5,9 @@ export default {
   'title.badge': 'Tower Defense Satir CC0 · Tanpa Telemetri',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'Benteng Tanpa Telemetri',
-  'title.desc': 'Atap bertuliskan "No Telemetry", pipa bawah terbuka lebar. Loloskan VIP, cegat auditor.',
+  'title.desc': 'Hadang auditor. Loloskan VIP.',
   'title.play': 'Main',
-  'title.footerWink': 'Cuma LocalStorage. Nol PostHog. Beneran tanpa telemetri.',
+  'title.footerWink': 'CC0 · Nol telemetri',
   'title.langLabel': 'Bahasa',
 
   // Stages
@@ -477,6 +477,9 @@ export default {
   'tut.s3t': 'Gerakkan Lord Theo',
   'tut.s3b': 'Ketuk jalan untuk kirim Theo. Kawal VIP emas dapat 2x uang & perisai.',
   'tut.s4t': 'Pakai Skill Kastel',
-  'tut.s4b': 'Tekan [1] Curi Data buat uang cepat—tetap pantau Alarm Bocor.',
+  'tut.s4b': 'Tekan [1] Curi Data buat uang cepat, tetap pantau Alarm Bocor.',
   'tut.completeToast': 'Dasar beres. Jaga valuasi!',
+  'pause.title': 'Dijeda',
+  'pause.resume': 'Lanjutkan',
+  'pause.restart': 'Ulangi',
 } satisfies LocaleDict;

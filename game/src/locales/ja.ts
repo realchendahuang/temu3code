@@ -5,9 +5,9 @@ export default {
   'title.badge': 'CC0 風刺タワーディフェンス · テレメトリ零',
   'title.name': 'Temu3 Kingdom',
   'title.sub': 'ノーテレメトリ要塞',
-  'title.desc': '屋根には「No Telemetry」。床下の配管は全開。VIPを通し、監査官を止めろ。',
+  'title.desc': '監査を止め、VIPだけ通せ。',
   'title.play': 'プレイ',
-  'title.footerWink': 'LocalStorageのみ。PostHogゼロ。本当に収集なし。',
+  'title.footerWink': 'CC0 · テレメトリなし',
   'title.langLabel': '言語',
 
   // Stages
@@ -479,4 +479,7 @@ export default {
   'tut.s4t': '城スキルを使う',
   'tut.s4b': '[1]データ窃取で即資金GET。ただし流出アラームに注意。',
   'tut.completeToast': '基本は完了。評価額を守り抜け！',
+  'pause.title': '一時停止',
+  'pause.resume': '再開',
+  'pause.restart': 'やり直す',
 } satisfies LocaleDict;
