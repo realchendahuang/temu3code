@@ -9,8 +9,10 @@ import {
   Bug,
   Castle,
   Check,
+  ChevronDown,
   Clock,
   Coins,
+  Compass,
   Copy,
   Cpu,
   Crosshair,
@@ -26,6 +28,7 @@ import {
   Gauge,
   GitFork,
   Globe,
+  Hammer,
   Heart,
   HelpCircle,
   Infinity as InfinityIcon,
@@ -36,6 +39,7 @@ import {
   Lock,
   Map as MapIcon,
   Megaphone,
+  MousePointerClick,
   Music,
   Pause,
   Play,
@@ -136,7 +140,11 @@ export type IconName =
   | 'scrollText'
   | 'userCheck'
   | 'snowflake'
-  | 'globe';
+  | 'globe'
+  | 'chevronDown'
+  | 'hammer'
+  | 'compass'
+  | 'mousePointer';
 
 const ICON_NODES: Record<IconName, LucideIconNode> = {
   shield: Shield,
@@ -205,6 +213,10 @@ const ICON_NODES: Record<IconName, LucideIconNode> = {
   userCheck: UserCheck,
   snowflake: Snowflake,
   globe: Globe,
+  chevronDown: ChevronDown,
+  hammer: Hammer,
+  compass: Compass,
+  mousePointer: MousePointerClick,
 };
 
 const svgInnerCache = new Map<IconName, string>();

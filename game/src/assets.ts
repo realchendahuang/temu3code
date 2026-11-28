@@ -15,7 +15,16 @@ export type AssetKey =
   | 'enemy-fork'
   | 'enemy-auditor'
   | 'enemy-veteran'
-  | 'enemy-gdpr';
+  | 'enemy-gdpr'
+  | 'hero-rage-walk'
+  | 'hero-vip-walk'
+  | 'guard-fan-walk'
+  | 'vip-exec-walk'
+  | 'enemy-dev-walk'
+  | 'enemy-fork-walk'
+  | 'enemy-auditor-walk'
+  | 'enemy-veteran-walk'
+  | 'enemy-gdpr-walk';
 
 const ALL_KEYS: AssetKey[] = [
   'map-meadow',
@@ -35,6 +44,15 @@ const ALL_KEYS: AssetKey[] = [
   'enemy-auditor',
   'enemy-veteran',
   'enemy-gdpr',
+  'hero-rage-walk',
+  'hero-vip-walk',
+  'guard-fan-walk',
+  'vip-exec-walk',
+  'enemy-dev-walk',
+  'enemy-fork-walk',
+  'enemy-auditor-walk',
+  'enemy-veteran-walk',
+  'enemy-gdpr-walk',
 ];
 
 class AssetStore {

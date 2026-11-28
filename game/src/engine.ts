@@ -1752,6 +1752,8 @@ export class GameEngine {
         v.fleeTimer -= dt;
         v.dist = Math.max(0, v.dist - 165 * dt);
         const pos = sampleStagePathAt(this.stageId, v.lane, v.dist, v.laneOffset);
+        const dxFlee = pos.x - v.x;
+        if (Math.abs(dxFlee) > 0.15) v.facing = dxFlee >= 0 ? 1 : -1;
         v.x = pos.x;
         v.y = pos.y;
         v.walkPhase += dt * 16;
@@ -1775,6 +1777,8 @@ export class GameEngine {
 
       const path = stage.sampledPaths[v.lane];
       const pos = sampleStagePathAt(this.stageId, v.lane, v.dist, v.laneOffset);
+      const dxVip = pos.x - v.x;
+      if (Math.abs(dxVip) > 0.15) v.facing = dxVip >= 0 ? 1 : -1;
       v.x = pos.x;
       v.y = pos.y;
 
@@ -2259,6 +2263,10 @@ export class GameEngine {
       const stage = this.getStage();
       const path = stage.sampledPaths[e.lane];
       const pos = sampleStagePathAt(this.stageId, e.lane, e.dist, e.laneOffset);
+      const dxMove = pos.x - e.x;
+      if (Math.abs(dxMove) > 0.15) {
+        e.facing = dxMove >= 0 ? 1 : -1;
+      }
       e.x = pos.x;
       e.y = pos.y;
 

@@ -462,6 +462,24 @@ const zhCN: LocaleDict = {
   'recap.stats': 'VIP: {vips} | 偷金: +{stolen}$ | 地毯撑爆: {rugs}{policies}',
   'recap.policies': ' | 政策: {list}',
   'recap.footer': '真·零遥测讽刺塔防 | temu3code.com/game/',
+
+  // Quick rules & interactive tutorial
+  'title.rule1': '点亮地基建塔，拦住查代码的',
+  'title.rule2': '放行金色金主（领主陪跑双倍）',
+  'title.rule3': '按 [1-4] 偷数据、埋毯、删推',
+  'tut.skip': '跳过',
+  'tut.next': '下一步',
+  'tut.done': '明白了',
+  'tut.replay': '重看教程',
+  'tut.s1t': '建第一座塔',
+  'tut.s1b': '点发光的圆地基，任选一座塔守住主路。',
+  'tut.s2t': '放出第 1 波',
+  'tut.s2b': '点「开始第 1 波」（或按 [N]）。拦住蓝衣查代码的，放行金主。',
+  'tut.s3t': '派领主走位',
+  'tut.s3b': '点路面派领主支援。贴着金色金主陪跑拿双倍奖金还能挡炮。',
+  'tut.s4t': '试试城堡技能',
+  'tut.s4b': '按 [1] 狂偷数据直接印钞——盯紧上面警报条就行。',
+  'tut.completeToast': '上手完成，守住估值！',
 };
 
 export default zhCN;

@@ -18,8 +18,8 @@
   <meta name="twitter:description" content="Escort Big-Tech VIPs, block open-source auditors, and trigger 'Steal Telemetry' behind a 'No Telemetry' sign. 3-stage satirical tower defense. CC0 Parody. Zero tracking." />
   <meta name="twitter:image" content="https://temu3code.com/og-card.png" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='3' y='3' width='58' height='58' rx='12' fill='none' stroke='%23facc15' stroke-opacity='0.45' stroke-width='2'/%3E%3Cpath d='M16 50V22h6v6h6v-6h8v6h6v-6h6v28H16z' fill='%231e293b' stroke='%23facc15' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M26 50V39a6 6 0 0 1 12 0v11' fill='%230f172a' stroke='%23fde047' stroke-width='3'/%3E%3Ccircle cx='32' cy='15' r='3.5' fill='%23c084fc'/%3E%3C/svg%3E" />
-  <script type="module" crossorigin src="./assets/index-DHMLJ2uO.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-xc3B3aQ5.css">
+  <script type="module" crossorigin src="./assets/index-YXUqzbp6.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CZ-yxJ35.css">
 </head>
 <body>
   <div id="app">
@@ -69,11 +69,11 @@
           <button class="ctrl-btn ctrl-restart" id="btn-restart" type="button" title="Restart Stage [R]" aria-label="Restart Stage" disabled data-icon="rotateCcw" data-icon-size="15"></button>
           <button class="ctrl-btn ctrl-music" id="btn-music" type="button" title="Music" aria-label="Toggle Music" data-icon="music" data-icon-size="15"></button>
           <button class="ctrl-btn" id="btn-mute" type="button" title="Audio [M]" aria-label="Toggle Sound" data-icon="volume2" data-icon-size="15"></button>
-          <label class="ctrl-lang-wrap" id="hud-lang-wrap" title="Language">
+          <button class="ctrl-lang-btn" id="btn-lang-hud" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" title="Language">
             <span class="ctrl-lang-ico" data-icon="globe" data-icon-size="14"></span>
             <span class="ctrl-lang-code" id="hud-lang-code">EN</span>
-            <select class="ctrl-lang-select" id="select-lang-hud" aria-label="Language"></select>
-          </label>
+            <span class="ctrl-lang-chev" data-icon="chevronDown" data-icon-size="12"></span>
+          </button>
           <button class="ctrl-btn" id="btn-help" type="button" title="Guide" aria-label="Quick Guide" data-icon="helpCircle" data-icon-size="16"></button>
         </div>
       </header>
@@ -163,6 +163,23 @@
       <!-- Targeting Hint -->
       <div id="targeting-hint" class="hidden"></div>
 
+      <!-- Interactive First-Run Tutorial Coachmark -->
+      <aside id="tutorial-card" class="tutorial-card hidden" role="region" aria-live="polite" aria-label="Tutorial">
+        <div class="tut-head">
+          <span class="tut-badge" id="tut-step-badge" dir="ltr">1 / 4</span>
+          <span class="tut-title" id="tut-title"></span>
+          <button class="tut-skip-btn" id="btn-tut-skip" type="button" data-i18n="tut.skip">Skip</button>
+        </div>
+        <p class="tut-body" id="tut-body"></p>
+        <div class="tut-foot">
+          <div class="tut-dots" id="tut-dots"></div>
+          <button class="tut-next-btn hidden" id="btn-tut-next" type="button" data-i18n="tut.next">Next</button>
+        </div>
+      </aside>
+
+      <!-- Custom 18-Language Dark Popover (shared by Title & HUD triggers) -->
+      <div id="lang-popover" class="lang-popover hidden" role="listbox" aria-label="Language"></div>
+
       <!-- Title Overlay (unhidden after initial locale loads cleanly) -->
       <div id="overlay-title" class="overlay hidden">
         <div class="modal-card title-card">
@@ -173,6 +190,20 @@
           <p class="title-desc" data-i18n="title.desc">
             "No Telemetry" on the roof. Pipes wide open below. Let VIPs in. Block the auditors.
           </p>
+          <div class="title-rules" aria-label="Quick Rules">
+            <div class="title-rule-item">
+              <span class="title-rule-ico ico-cyan" data-icon="hammer" data-icon-size="14"></span>
+              <span data-i18n="title.rule1">Tap pads to build &amp; block auditors</span>
+            </div>
+            <div class="title-rule-item">
+              <span class="title-rule-ico ico-gold" data-icon="crown" data-icon-size="14"></span>
+              <span data-i18n="title.rule2">Let Golden VIPs pass (Theo = 2x cash)</span>
+            </div>
+            <div class="title-rule-item">
+              <span class="title-rule-ico ico-purple" data-icon="database" data-icon-size="14"></span>
+              <span data-i18n="title.rule3">Fire [1-4] skills to farm &amp; wipe leaks</span>
+            </div>
+          </div>
           <div class="stage-picker" id="stage-picker" role="radiogroup" aria-label="Campaign Stage"></div>
           <div class="difficulty-picker" id="difficulty-picker" role="radiogroup" aria-label="Difficulty">
             <div class="diff-pills">
@@ -193,10 +224,11 @@
           </div>
           <div class="title-actions">
             <button class="primary-btn" id="btn-start-game" type="button" data-i18n="title.play">Play</button>
-            <label class="title-lang-wrap" id="title-lang-wrap" title="Language">
-              <span class="title-lang-ico" data-icon="globe" data-icon-size="16"></span>
-              <select class="title-lang-select" id="select-lang-title" aria-label="Language"></select>
-            </label>
+            <button class="title-lang-btn" id="btn-lang-title" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" title="Language">
+              <span class="title-lang-ico" data-icon="globe" data-icon-size="15"></span>
+              <span class="title-lang-name" id="title-lang-name">English</span>
+              <span class="title-lang-chev" data-icon="chevronDown" data-icon-size="13"></span>
+            </button>
           </div>
           <div class="title-footer">
             <button class="trophy-pill" id="btn-title-achievements" type="button" title="Medals">
@@ -234,7 +266,13 @@
           </div>
           <div class="help-panel" id="help-panel-guide">
             <div class="help-grid" id="help-content"></div>
-            <div class="help-hotkeys" id="help-hotkeys" aria-label="Keyboard Shortcuts"></div>
+            <div class="help-bottom-row">
+              <div class="help-hotkeys" id="help-hotkeys" aria-label="Keyboard Shortcuts"></div>
+              <button class="help-replay-tut-btn" id="btn-replay-tutorial" type="button">
+                <span class="btn-ico ico-gold" data-icon="compass" data-icon-size="14"></span>
+                <span data-i18n="tut.replay">Replay Tutorial</span>
+              </button>
+            </div>
           </div>
           <div class="help-panel hidden" id="help-panel-codex">
             <div class="codex-wrap" id="codex-content"></div>

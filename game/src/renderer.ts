@@ -26,6 +26,7 @@ import type {
 export interface RenderUIState {
   selectedPadId: string | null;
   hoveredPadId: string | null;
+  tutorialPadId?: string | null;
   targetingMode: TargetingMode;
   mouseX: number;
   mouseY: number;
@@ -610,6 +611,7 @@ export class GameRenderer {
   private hudTopEl: HTMLElement | null = null;
   private sparks: RendererSpark[] = [];
   private laserTracers: LaserTracer[] = [];
+  private prevStepHalf = new Map<string, number>();
 
   // Victory fireworks & Defeat ember stage-end FX state (ticks on wall clock so modals stay alive)
   private stageFxMode: 'none' | 'victory' | 'defeat' = 'none';
@@ -664,7 +666,8 @@ export class GameRenderer {
       return null;
     }
 
-    const maxDim = 192;
+    const isStrip = img.naturalWidth >= img.naturalHeight * 3;
+    const maxDim = isStrip ? 512 : 192;
     const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
     const w = Math.max(1, Math.round(img.naturalWidth * scale));
     const h = Math.max(1, Math.round(img.naturalHeight * scale));
@@ -691,7 +694,8 @@ export class GameRenderer {
     w: number,
     h: number,
     hitFlash: number,
-    threshold: number
+    threshold: number,
+    srcRect?: { sx: number; sy: number; sw: number; sh: number }
   ): void {
     if (hitFlash <= threshold || !img) return;
     const ctx = this.ctx;
@@ -700,7 +704,23 @@ export class GameRenderer {
     if (white) {
       const prevAlpha = ctx.globalAlpha;
       ctx.globalAlpha = prevAlpha * flashAlpha;
-      ctx.drawImage(white, x, y, w, h);
+      if (srcRect && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        const rx = white.width / img.naturalWidth;
+        const ry = white.height / img.naturalHeight;
+        ctx.drawImage(
+          white,
+          srcRect.sx * rx,
+          srcRect.sy * ry,
+          srcRect.sw * rx,
+          srcRect.sh * ry,
+          x,
+          y,
+          w,
+          h
+        );
+      } else {
+        ctx.drawImage(white, x, y, w, h);
+      }
       ctx.globalAlpha = prevAlpha;
       return;
     }
@@ -716,6 +736,114 @@ export class GameRenderer {
     ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = prevAlpha;
+  }
+
+  private emitFootDust(
+    unitTag: string,
+    x: number,
+    y: number,
+    walkPhase: number,
+    moveDir: number,
+    theme: RoadTheme,
+    heavy = false
+  ): void {
+    const stepIdx = Math.floor(walkPhase / Math.PI);
+    const prev = this.prevStepHalf.get(unitTag);
+    this.prevStepHalf.set(unitTag, stepIdx);
+    if (prev === undefined || prev === stepIdx) return;
+
+    const dustColor =
+      theme === 'furnace'
+        ? 'rgba(125, 211, 252, 0.42)'
+        : theme === 'bridge'
+          ? 'rgba(203, 213, 225, 0.48)'
+          : 'rgba(217, 198, 159, 0.58)';
+    const count = heavy ? 3 : 1;
+    for (let i = 0; i < count; i++) {
+      this.pushSpark({
+        x: x - moveDir * (4 + Math.random() * 6) + (Math.random() - 0.5) * (heavy ? 12 : 5),
+        y: y + 1 + (Math.random() - 0.5) * 3,
+        vx: -moveDir * (14 + Math.random() * 18) + (Math.random() - 0.5) * 10,
+        vy: -(8 + Math.random() * (heavy ? 18 : 11)),
+        size: (heavy ? 4.4 : 2.8) + Math.random() * (heavy ? 2.4 : 1.5),
+        color: dustColor,
+        life: 0.22 + Math.random() * 0.14,
+        maxLife: 0.36,
+        kind: 'smoke',
+      });
+    }
+  }
+
+  private getWalkStripFrame(walkKey: AssetKey, walkPhase: number): {
+    img: HTMLImageElement;
+    frameIdx: number;
+    sx: number;
+    sy: number;
+    sw: number;
+    sh: number;
+  } | null {
+    const img = assets.get(walkKey);
+    if (!img || !img.complete || img.naturalWidth < img.naturalHeight * 3.2 || img.naturalHeight <= 0) {
+      return null;
+    }
+    const frames = 4;
+    const sw = img.naturalWidth / frames;
+    const sh = img.naturalHeight;
+    const norm = ((walkPhase % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    const frameIdx = Math.floor((norm / (Math.PI * 2)) * frames) % frames;
+    return { img, frameIdx, sx: frameIdx * sw, sy: 0, sw, sh };
+  }
+
+  private drawTutorialBeacon(engine: GameEngine, ui: RenderUIState): void {
+    const padId = ui.tutorialPadId;
+    if (!padId || ui.selectedPadId === padId) return;
+    if (engine.towers.some((tw) => tw.padId === padId)) return;
+    const pad = engine.getStage().pads.find((p) => p.id === padId);
+    if (!pad) return;
+
+    const ctx = this.ctx;
+    const t = this.uiAnimTime;
+    const pulse = (t * 1.45) % 1;
+    const bob = Math.sin(t * 5.2) * 5;
+
+    ctx.save();
+    ctx.translate(pad.x, pad.y);
+
+    // Expanding outer ripple ring
+    ctx.strokeStyle = `rgba(250, 204, 21, ${(1 - pulse) * 0.85})`;
+    ctx.lineWidth = 3.2;
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 34 + pulse * 26, 20 + pulse * 15, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Inner glowing gold ring
+    ctx.strokeStyle = '#fde047';
+    ctx.fillStyle = 'rgba(250, 204, 21, 0.16)';
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 35, 21, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Bouncing golden chevron arrow pointing straight at the pad
+    const ay = -42 + bob;
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2.6;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, ay + 14);
+    ctx.lineTo(-12, ay);
+    ctx.lineTo(-5, ay);
+    ctx.lineTo(-5, ay - 12);
+    ctx.lineTo(5, ay - 12);
+    ctx.lineTo(5, ay);
+    ctx.lineTo(12, ay);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   private drawCenteredIconLabel(
@@ -1131,6 +1259,7 @@ export class GameRenderer {
       this.bossBannerY = this.getTargetBossBannerY(true);
       this.sparks = [];
       this.laserTracers = [];
+      this.prevStepHalf.clear();
       this.lastEngineTime = engine.time;
       return;
     }
@@ -1342,6 +1471,7 @@ export class GameRenderer {
     this.drawEntrySignposts(engine);
     this.drawGroundEffects(engine);
     this.drawTowerPads(engine, ui);
+    this.drawTutorialBeacon(engine, ui);
     this.drawRangesAndTargeting(engine, ui);
     this.drawCastle(engine);
 
@@ -6272,20 +6402,56 @@ export class GameRenderer {
       Math.hypot(h.targetX - h.x, h.targetY - h.y) > 4 ||
       (h.stance === 'vip' && h.escortingVipId !== null);
     const heroLungeTimer = getLungeTimer(h);
-    const walkLean = isMoving ? Math.sin(h.walkPhase) * 0.06 : 0;
     const lunge = this.computeMeleeLunge(heroLungeTimer, h.stance === 'rage', h.attackTimer, 0.76);
-    const hop = isMoving ? Math.abs(Math.sin(h.walkPhase)) * 5 : 0;
+    const roadTheme = getRoadTheme(engine.getStage());
+    if (isMoving && !engine.paused) {
+      this.emitFootDust('hero', h.x, h.y, h.walkPhase, h.facing, roadTheme, false);
+    }
 
     const heroKey: AssetKey = h.stance === 'vip' ? 'hero-vip' : 'hero-rage';
+    const heroWalkKey: AssetKey = h.stance === 'vip' ? 'hero-vip-walk' : 'hero-rage-walk';
+    const walkFrame = isMoving && lunge < 0.25 ? this.getWalkStripFrame(heroWalkKey, h.walkPhase) : null;
+    const stridePulse = isMoving ? Math.abs(Math.sin(h.walkPhase)) : 0;
+    const idleBreath = isMoving ? 0 : Math.sin(engine.time * 3.4) * 0.02;
+    const walkLean = isMoving ? h.facing * (0.045 + Math.sin(h.walkPhase) * 0.03) : 0;
+    const hop = isMoving ? stridePulse * (walkFrame ? 3.2 : 5.5) : 0;
+    const runSquashX = isMoving ? 1.03 - stridePulse * 0.055 : 1 - idleBreath * 0.6;
+    const runSquashY = isMoving ? 0.97 + stridePulse * 0.06 : 1 + idleBreath;
+
     ctx.save();
     ctx.translate(h.facing * lunge * 11, -hop - lunge * 2.5);
     ctx.rotate(walkLean + h.facing * lunge * 0.14);
-    ctx.scale(1 + lunge * 0.08, 1 - lunge * 0.04);
+    ctx.scale(runSquashX * (1 + lunge * 0.08), runSquashY * (1 - lunge * 0.04));
     // Flip direction cleanly (hero-rage faces left by default, hero-vip faces right by default)
     const naturalDir = h.stance === 'vip' ? 1 : -1;
     if (h.facing !== naturalDir) ctx.scale(-1, 1);
 
-    if (img) {
+    if (walkFrame) {
+      const refHt = img && img.width > 0 ? (img.height / img.width) * 64 : 76;
+      const cellDraw = Math.round(refHt * (256 / 212));
+      const footPad = Math.round(cellDraw * (10 / 256));
+      const dx = -cellDraw / 2;
+      const dy = 8 + footPad - cellDraw;
+      ctx.drawImage(
+        walkFrame.img,
+        walkFrame.sx,
+        walkFrame.sy,
+        walkFrame.sw,
+        walkFrame.sh,
+        dx,
+        dy,
+        cellDraw,
+        cellDraw
+      );
+      if (h.hitFlash > 0.2) {
+        this.drawHitFlashOverlay(heroWalkKey, walkFrame.img, dx, dy, cellDraw, cellDraw, h.hitFlash, 0.2, {
+          sx: walkFrame.sx,
+          sy: walkFrame.sy,
+          sw: walkFrame.sw,
+          sh: walkFrame.sh,
+        });
+      }
+    } else if (img) {
       const w = 64;
       const ht = (img.height / img.width) * w;
       ctx.drawImage(img, -w / 2, 8 - ht, w, ht);
@@ -6373,21 +6539,55 @@ export class GameRenderer {
     const isMoving = engagedTarget
       ? Math.hypot(engagedTarget.x + 16 - g.x, engagedTarget.y - g.y) > 10
       : Math.hypot(g.homeX - g.x, g.homeY - g.y) > 3;
-    const walkLean = !g.salutingVip && isMoving ? Math.sin(g.walkPhase) * 0.06 : 0;
     const inMelee = g.engagedEnemyId !== null && !g.salutingVip && !isMoving;
     const guardLungeTimer = getLungeTimer(g);
     const lunge = this.computeMeleeLunge(guardLungeTimer, inMelee, g.attackTimer, g.attackCooldown);
-    const hop = isMoving ? Math.abs(Math.sin(g.walkPhase)) * 3.5 : 0;
+    const guardMoving = isMoving && !g.salutingVip && lunge < 0.25;
+    if (guardMoving && !engine.paused) {
+      this.emitFootDust(`g-${g.id}`, g.x, g.y, g.walkPhase, g.facing, getRoadTheme(engine.getStage()), false);
+    }
+    const walkFrame = guardMoving ? this.getWalkStripFrame('guard-fan-walk', g.walkPhase) : null;
+    const stridePulse = guardMoving ? Math.abs(Math.sin(g.walkPhase)) : 0;
+    const idleBreath = guardMoving ? 0 : Math.sin(engine.time * 3.8 + g.id) * 0.022;
+    const walkLean = guardMoving ? g.facing * (0.04 + Math.sin(g.walkPhase) * 0.03) : 0;
+    const hop = guardMoving ? stridePulse * (walkFrame ? 2.4 : 3.8) : 0;
+    const runSquashX = guardMoving ? 1.03 - stridePulse * 0.05 : 1 - idleBreath * 0.5;
+    const runSquashY = guardMoving ? 0.97 + stridePulse * 0.055 : 1 + idleBreath;
 
     ctx.save();
     ctx.translate(g.facing * lunge * 9.5, -hop - lunge * 2);
     ctx.rotate(walkLean + g.facing * lunge * 0.15);
-    ctx.scale(1 + lunge * 0.07, 1 - lunge * 0.04);
+    ctx.scale(runSquashX * (1 + lunge * 0.07), runSquashY * (1 - lunge * 0.04));
     if (g.facing > 0) ctx.scale(-1, 1);
     if (g.salutingVip) ctx.rotate(-0.18);
 
-    if (img) {
-      const w = g.variant === 'vouched' ? 43 : 36;
+    const w = g.variant === 'vouched' ? 43 : 36;
+    if (walkFrame) {
+      const refHt = img && img.width > 0 ? (img.height / img.width) * w : w;
+      const cellDraw = Math.round(refHt * (256 / 212));
+      const footPad = Math.round(cellDraw * (10 / 256));
+      const dx = -cellDraw / 2;
+      const dy = 5 + footPad - cellDraw;
+      ctx.drawImage(
+        walkFrame.img,
+        walkFrame.sx,
+        walkFrame.sy,
+        walkFrame.sw,
+        walkFrame.sh,
+        dx,
+        dy,
+        cellDraw,
+        cellDraw
+      );
+      if (g.hitFlash > 0.25) {
+        this.drawHitFlashOverlay('guard-fan-walk', walkFrame.img, dx, dy, cellDraw, cellDraw, g.hitFlash, 0.25, {
+          sx: walkFrame.sx,
+          sy: walkFrame.sy,
+          sw: walkFrame.sw,
+          sh: walkFrame.sh,
+        });
+      }
+    } else if (img) {
       const h = (img.height / img.width) * w;
       ctx.drawImage(img, -w / 2, 5 - h, w, h);
       if (g.hitFlash > 0.25) {
@@ -6548,13 +6748,37 @@ export class GameRenderer {
     ctx.fill();
     ctx.stroke();
 
-    const hop = Math.abs(Math.sin(v.walkPhase)) * 4;
-    const vipLean = Math.sin(v.walkPhase) * (v.fleeing ? 0.06 : 0.042);
+    const vipDir = v.fleeing ? -1 : (v.facing ?? 1);
+    if (!engine.paused) {
+      this.emitFootDust(`v-${v.id}`, v.x, v.y, v.walkPhase, vipDir, getRoadTheme(engine.getStage()), v.fleeing);
+    }
+    const walkFrame = this.getWalkStripFrame('vip-exec-walk', v.walkPhase);
+    const stridePulse = Math.abs(Math.sin(v.walkPhase));
+    const hop = stridePulse * (walkFrame ? (v.fleeing ? 4.2 : 2.5) : 4.2);
+    const vipLean = vipDir * (v.fleeing ? 0.075 : 0.025) + Math.sin(v.walkPhase) * (v.fleeing ? 0.045 : 0.025);
+    const runSquashX = 1.028 - stridePulse * 0.05;
+    const runSquashY = 0.972 + stridePulse * 0.055;
     ctx.save();
     ctx.translate(0, -hop);
     ctx.rotate(vipLean);
-    if (v.fleeing) ctx.scale(-1, 1);
-    if (img) {
+    ctx.scale(runSquashX, runSquashY);
+    if (vipDir < 0) ctx.scale(-1, 1);
+    if (walkFrame) {
+      const refHt = img && img.width > 0 ? (img.height / img.width) * 54 : 68;
+      const cellDraw = Math.round(refHt * (256 / 212));
+      const footPad = Math.round(cellDraw * (10 / 256));
+      ctx.drawImage(
+        walkFrame.img,
+        walkFrame.sx,
+        walkFrame.sy,
+        walkFrame.sw,
+        walkFrame.sh,
+        -cellDraw / 2,
+        6 + footPad - cellDraw,
+        cellDraw,
+        cellDraw
+      );
+    } else if (img) {
       const w = 54;
       const h = (img.height / img.width) * w;
       ctx.drawImage(img, -w / 2, 6 - h, w, h);
@@ -6719,17 +6943,67 @@ export class GameRenderer {
     }
     const attackCd = e.engagedByHero ? 1.0 : 1.05;
     const lunge = this.computeMeleeLunge(getLungeTimer(e), isMelee && e.stunTimer <= 0, e.attackTimer, attackCd);
-    const walkLean = isMoving ? Math.sin(e.walkPhase) * 0.06 : 0;
-    const hop = isMoving ? Math.abs(Math.sin(e.walkPhase)) * (e.isBoss ? 3 : 5) : 0;
+    const unitFacing = isMelee ? meleeDir : (e.facing ?? 1);
+    if (isMoving && !engine.paused) {
+      this.emitFootDust(
+        `e-${e.id}`,
+        e.x,
+        e.y,
+        e.walkPhase,
+        unitFacing,
+        getRoadTheme(engine.getStage()),
+        e.isBoss
+      );
+    }
+    const walkKey = `enemy-${e.kind}-walk` as AssetKey;
+    const walkFrame = isMoving ? this.getWalkStripFrame(walkKey, e.walkPhase) : null;
+    const stridePulse = isMoving ? Math.abs(Math.sin(e.walkPhase)) : 0;
+    const idleBreath = isMoving ? 0 : Math.sin(t * 3.4 + e.id) * 0.018;
+    const baseForwardLean = isMoving ? unitFacing * (e.kind === 'fork' ? 0.07 : e.isBoss ? 0.025 : 0.04) : 0;
+    const walkLean = baseForwardLean + (isMoving ? Math.sin(e.walkPhase) * (e.isBoss ? 0.025 : 0.035) : 0);
+    const hop = isMoving
+      ? stridePulse * (walkFrame ? (e.isBoss ? 2.2 : e.kind === 'fork' ? 4.2 : 2.8) : e.isBoss ? 3 : 5)
+      : 0;
     const hitSquash = e.hitFlash > 0.3 ? 1 + (e.hitFlash - 0.3) * 0.14 : 1;
+    const runSquashX = isMoving ? (e.isBoss ? 1.035 : 1.03) - stridePulse * 0.055 : 1 - idleBreath * 0.5;
+    const runSquashY = isMoving ? (e.isBoss ? 0.965 : 0.97) + stridePulse * 0.06 : 1 + idleBreath;
 
     ctx.save();
     ctx.translate(meleeDir * lunge * (e.isBoss ? 12 : 8.5), -hop - lunge * 2);
     ctx.rotate(walkLean + meleeDir * lunge * (e.isBoss ? 0.1 : 0.15));
-    ctx.scale(hitSquash * (1 + lunge * 0.06), (1 / hitSquash) * (1 - lunge * 0.03));
+    ctx.scale(
+      runSquashX * hitSquash * (1 + lunge * 0.06),
+      runSquashY * (1 / hitSquash) * (1 - lunge * 0.03)
+    );
+    if (unitFacing < 0) ctx.scale(-1, 1);
 
     const spriteW = e.isBoss ? 92 : e.kind === 'auditor' || e.kind === 'veteran' ? 54 : 46;
-    if (img) {
+    if (walkFrame) {
+      const refHt = img && img.width > 0 ? (img.height / img.width) * spriteW : spriteW * 1.15;
+      const cellDraw = Math.round(refHt * (256 / 212));
+      const footPad = Math.round(cellDraw * (10 / 256));
+      const dx = -cellDraw / 2;
+      const dy = 7 + footPad - cellDraw;
+      ctx.drawImage(
+        walkFrame.img,
+        walkFrame.sx,
+        walkFrame.sy,
+        walkFrame.sw,
+        walkFrame.sh,
+        dx,
+        dy,
+        cellDraw,
+        cellDraw
+      );
+      if (e.hitFlash > 0.25) {
+        this.drawHitFlashOverlay(walkKey, walkFrame.img, dx, dy, cellDraw, cellDraw, e.hitFlash, 0.25, {
+          sx: walkFrame.sx,
+          sy: walkFrame.sy,
+          sw: walkFrame.sw,
+          sh: walkFrame.sh,
+        });
+      }
+    } else if (img) {
       const h = (img.height / img.width) * spriteW;
       ctx.drawImage(img, -spriteW / 2, 7 - h, spriteW, h);
       if (e.hitFlash > 0.25) {

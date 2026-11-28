@@ -142,7 +142,10 @@ body {
 .ach-medal-ico,
 .radial-ico,
 .ctrl-lang-ico,
-.title-lang-ico {
+.title-lang-ico,
+.ctrl-lang-chev,
+.title-lang-chev,
+.title-rule-ico {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -465,8 +468,8 @@ body {
   pointer-events: none;
 }
 
-/* ---- Compact 18-Language Dropdown Pill in Top HUD ---- */
-.ctrl-lang-wrap {
+/* ---- Compact 18-Language Custom Trigger Button in Top HUD ---- */
+.ctrl-lang-btn {
   position: relative;
   height: clamp(28px, 2.8vw, 36px);
   padding: 0 8px;
@@ -479,14 +482,18 @@ body {
   justify-content: center;
   gap: 4px;
   cursor: pointer;
-  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+  font-family: inherit;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s, color 0.15s;
 }
 
-.ctrl-lang-wrap:hover,
-.ctrl-lang-wrap:focus-within {
+.ctrl-lang-btn:hover,
+.ctrl-lang-btn.is-open,
+.ctrl-lang-btn:focus-visible {
   transform: translateY(-1px);
   border-color: #facc15;
   color: #fef08a;
+  background: rgba(15, 23, 42, 0.96);
+  outline: none;
 }
 
 .ctrl-lang-ico {
@@ -503,24 +510,258 @@ body {
   white-space: nowrap;
 }
 
-.ctrl-lang-select {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  border: 0;
-  background: #0f172a;
-  color: #f8fafc;
-  font-size: 13px;
+.ctrl-lang-chev,
+.title-lang-chev {
+  opacity: 0.72;
+  transition: transform 0.16s ease;
+  pointer-events: none;
 }
 
-.ctrl-lang-select option,
-.title-lang-select option {
-  background: #0f172a;
-  color: #f8fafc;
+.ctrl-lang-btn.is-open .ctrl-lang-chev,
+.title-lang-btn.is-open .title-lang-chev {
+  transform: rotate(180deg);
+}
+
+/* ---- Shared Custom Dark 2-Column Language Popover (temu3code.com style) ---- */
+.lang-popover {
+  position: absolute;
+  z-index: 95;
+  width: min(326px, calc(100% - 20px));
+  max-height: min(360px, 72%);
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(250, 204, 21, 0.35);
+  background: rgba(10, 15, 28, 0.97);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.82), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  animation: langPopIn 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lang-popover.hidden {
+  display: none !important;
+}
+
+@keyframes langPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.lang-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 12.5px;
   font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+  transition: background 0.11s ease, color 0.11s ease, border-color 0.11s ease;
+}
+
+.lang-opt:hover,
+.lang-opt:focus-visible {
+  background: rgba(148, 163, 184, 0.14);
+  color: #ffffff;
+  outline: none;
+}
+
+.lang-opt.is-active {
+  background: rgba(250, 204, 21, 0.15);
+  border-color: rgba(250, 204, 21, 0.42);
+  color: #fef08a;
+  font-weight: 800;
+}
+
+.lang-opt-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lang-opt-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: #64748b;
+  direction: ltr;
+}
+
+.lang-opt.is-active .lang-opt-meta {
+  color: #facc15;
+}
+
+/* ---- Interactive First-Run Tutorial Coachmark (anchored in clean bottom-right corner above Wave Call) ---- */
+.tutorial-card {
+  position: absolute;
+  bottom: clamp(64px, 10.5%, 78px);
+  right: 14px;
+  z-index: 42;
+  width: min(336px, calc(100% - 28px));
+  padding: 10px 13px 9px;
+  border-radius: 14px;
+  border: 2px solid rgba(250, 204, 21, 0.78);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.68), 0 0 22px rgba(250, 204, 21, 0.18);
+  color: #f8fafc;
+  pointer-events: auto;
+  animation: tutSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tutorial-card.hidden {
+  display: none !important;
+}
+
+@keyframes tutSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tut-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.tut-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.2);
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  color: #fde047;
+  font-size: 10.5px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.tut-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fef08a;
+  flex: 1;
+  min-width: 0;
+}
+
+.tut-skip-btn {
+  padding: 2px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(30, 41, 59, 0.72);
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.tut-skip-btn:hover {
+  color: #f8fafc;
+  border-color: rgba(248, 250, 252, 0.5);
+}
+
+.tut-body {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.42;
+  color: #e2e8f0;
+}
+
+.tut-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tut-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tut-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.32);
+  transition: background 0.15s, width 0.15s;
+}
+
+.tut-dot.is-done {
+  background: #34d399;
+}
+
+.tut-dot.is-current {
+  width: 18px;
+  background: #facc15;
+}
+
+.tut-next-btn {
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #fde047;
+  background: linear-gradient(180deg, #facc15, #d97706);
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.tut-next-btn:hover {
+  transform: translateY(-1px);
+}
+
+.tut-next-btn.hidden {
+  display: none !important;
+}
+
+.tut-highlight {
+  box-shadow: 0 0 0 3px #facc15, 0 0 20px rgba(250, 204, 21, 0.85) !important;
+  animation: tutPulseGlow 1.15s ease-in-out infinite !important;
+}
+
+@keyframes tutPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 2.5px #facc15, 0 0 14px rgba(250, 204, 21, 0.72);
+  }
+  50% {
+    box-shadow: 0 0 0 4.5px #fef08a, 0 0 26px rgba(250, 204, 21, 0.98);
+  }
 }
 
 /* ---- Toast Banner ---- */
@@ -2325,27 +2566,55 @@ body {
   color: #fef08a;
 }
 
-/* ---- Sleek 18-Language Dropdown on Title Screen ---- */
-.title-lang-wrap {
-  position: relative;
+/* ---- Compact 3-Step Visual Rule Strip on Title Screen ---- */
+.title-rules {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin: 0 auto 12px;
+  max-width: 650px;
+}
+
+.title-rule-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(15, 23, 42, 0.66);
+  color: #e2e8f0;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: start;
+}
+
+/* ---- Sleek 18-Language Custom Trigger on Title Screen ---- */
+.title-lang-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 12px;
+  gap: 7px;
+  padding: 0 13px;
   height: 42px;
   border-radius: 12px;
   border: 2px solid rgba(148, 163, 184, 0.45);
   background: rgba(30, 41, 59, 0.78);
   color: #e2e8f0;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
-.title-lang-wrap:hover,
-.title-lang-wrap:focus-within {
+.title-lang-btn:hover,
+.title-lang-btn.is-open,
+.title-lang-btn:focus-visible {
   border-color: #facc15;
   color: #fef08a;
   background: rgba(30, 41, 59, 0.94);
+  outline: none;
 }
 
 .title-lang-ico {
@@ -2353,33 +2622,48 @@ body {
   pointer-events: none;
 }
 
-.title-lang-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  border: 0;
-  color: inherit;
-  font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 700;
-  padding-inline-end: 14px;
-  cursor: pointer;
-  outline: none;
-  max-width: 170px;
+.title-lang-name {
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.title-lang-wrap::after {
-  content: '';
-  position: absolute;
-  inset-inline-end: 11px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: translateY(-65%) rotate(45deg);
-  opacity: 0.75;
-  pointer-events: none;
+.help-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.help-bottom-row .help-hotkeys {
+  flex: 1;
+  margin-top: 0;
+}
+
+.help-replay-tut-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(250, 204, 21, 0.45);
+  background: rgba(250, 204, 21, 0.1);
+  color: #fef08a;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.14s, border-color 0.14s, transform 0.1s;
+}
+
+.help-replay-tut-btn:hover {
+  background: rgba(250, 204, 21, 0.2);
+  border-color: #facc15;
+  transform: translateY(-1px);
 }
 
 .title-footer {
@@ -3686,15 +3970,22 @@ body {
     font-size: 12px;
   }
 
-  .title-lang-wrap {
+  .title-rules {
+    gap: 5px;
+    margin-bottom: 7px;
+  }
+
+  .title-rule-item {
+    padding: 5px 7px;
+    font-size: 10px;
+    gap: 5px;
+  }
+
+  .title-lang-btn {
     height: 34px;
     padding: 0 10px;
     border-radius: 10px;
-  }
-
-  .title-lang-select {
     font-size: 12px;
-    max-width: 150px;
   }
 
   .stage-picker {
@@ -4047,14 +4338,52 @@ body {
     font-size: 11.5px;
   }
 
-  .title-card .title-lang-wrap {
-    height: 30px;
-    padding: 0 9px;
+  .title-card .title-rules {
+    gap: 4px;
+    margin-bottom: 5px;
   }
 
-  .title-card .title-lang-select {
+  .title-card .title-rule-item {
+    padding: 3px 6px;
+    font-size: 9px;
+    line-height: 1.2;
+    border-radius: 7px;
+  }
+
+  .title-card .title-lang-btn {
+    height: 30px;
+    padding: 0 9px;
     font-size: 11px;
-    max-width: 140px;
+  }
+
+  .tutorial-card {
+    bottom: 50px;
+    right: 10px;
+    width: min(296px, calc(100% - 20px));
+    padding: 7px 10px;
+  }
+
+  .lang-popover {
+    width: min(440px, calc(100% - 20px)) !important;
+    max-height: calc(100% - 20px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+    padding: 5px;
+  }
+
+  .lang-opt {
+    min-height: 29px;
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+
+  .tut-title {
+    font-size: 11.5px;
+  }
+
+  .tut-body {
+    font-size: 10.5px;
+    margin-bottom: 6px;
   }
 
   .title-card .title-footer {
@@ -4449,10 +4778,6 @@ body {
 .policy-key {
   direction: ltr;
   unicode-bidi: isolate;
-}
-
-[dir="rtl"] .title-lang-wrap::after {
-  inset-inline-end: 11px;
 }
 
 [dir="rtl"] .policy-card,

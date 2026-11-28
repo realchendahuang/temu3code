@@ -28,7 +28,7 @@ const en: LocaleDict = {
   'stage.meadow.welcome': 'Tap pads to build, then start Wave 1 [N].',
 
   'stage.bridge.name': 'EU Audit Canyon',
-  'stage.bridge.tag': 'X-crossing · W2 lane 2',
+  'stage.bridge.tag': 'X-cross · W2 lane 2',
   'stage.bridge.entry0': 'North Ridge',
   'stage.bridge.entry1': 'South Gorge',
   'stage.bridge.welcome': 'Hold the X-crossing. South lane opens Wave 2.',
@@ -462,6 +462,24 @@ const en: LocaleDict = {
   'recap.stats': 'VIPs: {vips} | Stolen: +${stolen} | 41.6GB Bursts: {rugs}{policies}',
   'recap.policies': ' | Policies: {list}',
   'recap.footer': 'Zero Telemetry (actually) | temu3code.com/game/',
+
+  // Quick rules & interactive tutorial
+  'title.rule1': 'Build on pads to block auditors',
+  'title.rule2': 'Let VIPs in (Theo = 2x cash)',
+  'title.rule3': 'Skills [1-4] farm & wipe leaks',
+  'tut.skip': 'Skip',
+  'tut.next': 'Next',
+  'tut.done': 'Got it!',
+  'tut.replay': 'Replay Tutorial',
+  'tut.s1t': 'Build Your First Tower',
+  'tut.s1b': 'Tap the glowing pad and pick any tower to guard the road.',
+  'tut.s2t': 'Send Wave 1',
+  'tut.s2b': 'Click Start W1 (or press [N]). Block blue devs; let Golden VIPs through.',
+  'tut.s3t': 'Move Lord Theo',
+  'tut.s3b': 'Tap the road to move Theo. Walk beside Golden VIPs for 2x cash & a shield.',
+  'tut.s4t': 'Use Castle Skills',
+  'tut.s4b': 'Hit [1] Steal Data for quick cash—just keep an eye on the Leak Alarm.',
+  'tut.completeToast': 'Basics done. Hold the valuation!',
 };
 
 export default en;

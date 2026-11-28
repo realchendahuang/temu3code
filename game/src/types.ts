@@ -192,6 +192,7 @@ export interface Enemy {
   enraged: boolean;
   hitFlash: number;
   lungeTimer?: number;
+  facing?: 1 | -1;
   walkPhase: number;
   bubbleText: string | null;
   bubbleTimer: number;
@@ -212,6 +213,7 @@ export interface VipUnit {
   aoeShieldUsed: boolean;
   fleeing: boolean;
   fleeTimer: number;
+  facing?: 1 | -1;
   walkPhase: number;
   bubbleText: string | null;
   bubbleTimer: number;

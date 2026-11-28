@@ -105,10 +105,18 @@ const btnPause = document.getElementById('btn-pause') as HTMLButtonElement;
 const btnRestart = document.getElementById('btn-restart') as HTMLButtonElement;
 const btnMusic = document.getElementById('btn-music') as HTMLButtonElement;
 const btnMute = document.getElementById('btn-mute') as HTMLButtonElement;
-const hudLangWrap = document.getElementById('hud-lang-wrap') as HTMLLabelElement;
+const btnLangHud = document.getElementById('btn-lang-hud') as HTMLButtonElement;
 const hudLangCode = document.getElementById('hud-lang-code') as HTMLSpanElement;
-const selectLangHud = document.getElementById('select-lang-hud') as HTMLSelectElement;
+const langPopover = document.getElementById('lang-popover') as HTMLDivElement;
 const btnHelp = document.getElementById('btn-help') as HTMLButtonElement;
+const tutorialCard = document.getElementById('tutorial-card') as HTMLElement;
+const tutStepBadge = document.getElementById('tut-step-badge') as HTMLSpanElement;
+const tutTitle = document.getElementById('tut-title') as HTMLSpanElement;
+const tutBody = document.getElementById('tut-body') as HTMLParagraphElement;
+const tutDots = document.getElementById('tut-dots') as HTMLDivElement;
+const btnTutSkip = document.getElementById('btn-tut-skip') as HTMLButtonElement;
+const btnTutNext = document.getElementById('btn-tut-next') as HTMLButtonElement;
+const btnReplayTutorial = document.getElementById('btn-replay-tutorial') as HTMLButtonElement;
 
 const heroPill = document.getElementById('hero-pill') as HTMLButtonElement;
 const heroAvatar = document.getElementById('hero-avatar') as HTMLImageElement;
@@ -156,8 +164,8 @@ const policyChoicesEl = document.getElementById('policy-choices') as HTMLDivElem
 const bestRecordText = document.getElementById('best-record-text') as HTMLSpanElement;
 const btnTitleAchievements = document.getElementById('btn-title-achievements') as HTMLButtonElement;
 const titleAchCount = document.getElementById('title-ach-count') as HTMLSpanElement;
-const titleLangWrap = document.getElementById('title-lang-wrap') as HTMLLabelElement;
-const selectLangTitle = document.getElementById('select-lang-title') as HTMLSelectElement;
+const btnLangTitle = document.getElementById('btn-lang-title') as HTMLButtonElement;
+const titleLangName = document.getElementById('title-lang-name') as HTMLSpanElement;
 
 const resultStars = document.getElementById('result-stars') as HTMLDivElement;
 const resultRank = document.getElementById('result-rank') as HTMLDivElement;
@@ -183,10 +191,13 @@ const RTL_TEXT_CONTAINERS: HTMLElement[] = [
   inspectorCard,
   bannerToast,
   achievementToast,
+  tutorialCard,
+  langPopover,
 ];
 
 const SITE_LANG_STORAGE_KEY = 'temu3-lang';
 const LANG_STORAGE_KEY = 'temu3_kingdom_lang';
+const TUTORIAL_STORAGE_KEY = 'temu3_kingdom_tutorial_v1';
 const DIFFICULTY_STORAGE_KEY = 'temu3_kingdom_difficulty';
 const STAGE_STORAGE_KEY = 'temu3_kingdom_stage_v1';
 const STAGE_ICONS: Record<StageId, IconName> = {
@@ -223,12 +234,183 @@ const BRANCH_ICONS: Record<TowerBaseType, { a: { ico: IconName; cls: string }; b
   },
 };
 
-function populateLanguageSelects(): void {
-  const optionsHtml = LANGUAGES.map(
-    (meta) => `<option value="${meta.code}">${escapeHtml(meta.name)}</option>`
-  ).join('');
-  selectLangHud.innerHTML = optionsHtml;
-  selectLangTitle.innerHTML = optionsHtml;
+let langPopoverAnchor: HTMLButtonElement | null = null;
+
+function renderLangPopover(): void {
+  const current = engine.lang;
+  langPopover.innerHTML = LANGUAGES.map((meta) => {
+    const active = meta.code === current;
+    const metaRight = active
+      ? iconSvg('check', { size: 13, strokeWidth: 2.5 })
+      : escapeHtml(meta.short);
+    return `<button type="button" class="lang-opt${active ? ' is-active' : ''}" role="option" aria-selected="${active ? 'true' : 'false'}" data-lang="${meta.code}" lang="${meta.code}">
+      <span class="lang-opt-name">${escapeHtml(meta.name)}</span>
+      <span class="lang-opt-meta">${metaRight}</span>
+    </button>`;
+  }).join('');
+}
+
+function positionLangPopover(anchor: HTMLButtonElement): void {
+  const stageRect = stageWrap.getBoundingClientRect();
+  const aRect = anchor.getBoundingClientRect();
+  const compactMob = stageRect.height <= 460;
+  const popW = Math.min(compactMob ? 440 : 326, Math.max(220, stageRect.width - 20));
+  langPopover.style.width = `${Math.round(popW)}px`;
+  const popH = Math.min(langPopover.scrollHeight || 310, Math.round(stageRect.height * (compactMob ? 0.92 : 0.72)), 360);
+
+  const relLeft = aRect.left - stageRect.left;
+  const relRight = aRect.right - stageRect.left;
+  const relTop = aRect.top - stageRect.top;
+  const relBottom = aRect.bottom - stageRect.top;
+
+  // Prefer right-aligned under HUD button, centered/start-aligned near Title button, clamped cleanly
+  let left = anchor === btnLangHud ? relRight - popW : relLeft + (aRect.width - popW) / 2;
+  left = Math.max(10, Math.min(left, stageRect.width - popW - 10));
+
+  const spaceBelow = stageRect.height - relBottom - 10;
+  const spaceAbove = relTop - 10;
+  let top = relBottom + 8;
+  if (spaceBelow < Math.min(popH, 200) && spaceAbove > spaceBelow) {
+    top = Math.max(10, relTop - popH - 8);
+  }
+  top = Math.max(10, Math.min(top, stageRect.height - Math.min(popH, stageRect.height - 20) - 10));
+
+  langPopover.style.left = `${Math.round(left)}px`;
+  langPopover.style.top = `${Math.round(top)}px`;
+}
+
+function closeLangPopover(returnFocus = false): void {
+  if (langPopover.classList.contains('hidden')) return;
+  const prevAnchor = langPopoverAnchor;
+  langPopover.classList.add('hidden');
+  btnLangHud.classList.remove('is-open');
+  btnLangTitle.classList.remove('is-open');
+  btnLangHud.setAttribute('aria-expanded', 'false');
+  btnLangTitle.setAttribute('aria-expanded', 'false');
+  langPopoverAnchor = null;
+  if (returnFocus && prevAnchor) prevAnchor.focus();
+}
+
+function toggleLangPopover(anchor: HTMLButtonElement): void {
+  if (!langPopover.classList.contains('hidden') && langPopoverAnchor === anchor) {
+    closeLangPopover(false);
+    return;
+  }
+  renderLangPopover();
+  langPopoverAnchor = anchor;
+  langPopover.classList.remove('hidden');
+  btnLangHud.classList.toggle('is-open', anchor === btnLangHud);
+  btnLangTitle.classList.toggle('is-open', anchor === btnLangTitle);
+  btnLangHud.setAttribute('aria-expanded', anchor === btnLangHud ? 'true' : 'false');
+  btnLangTitle.setAttribute('aria-expanded', anchor === btnLangTitle ? 'true' : 'false');
+  positionLangPopover(anchor);
+}
+
+// ---- Interactive 4-Step First-Run Tutorial ----
+let tutorialStep = -1; // -1 = inactive, 0 = build, 1 = wave, 2 = hero, 3 = skill
+
+function isTutorialCompleted(): boolean {
+  try {
+    return localStorage.getItem(TUTORIAL_STORAGE_KEY) === 'done';
+  } catch {
+    return false;
+  }
+}
+
+function markTutorialCompleted(): void {
+  try {
+    localStorage.setItem(TUTORIAL_STORAGE_KEY, 'done');
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function clearTutorialHighlights(): void {
+  ui.tutorialPadId = null;
+  btnCallWave.classList.remove('tut-highlight');
+  heroPill.classList.remove('tut-highlight');
+  btnSkillSteal.classList.remove('tut-highlight');
+}
+
+function pickTutorialPadId(): string | null {
+  const pads = engine.getStage().pads;
+  const preferred = pads.find((p) => p.id === 'p2' && !engine.towers.some((tw) => tw.padId === p.id));
+  if (preferred) return preferred.id;
+  const anyEmpty = pads.find((p) => !engine.towers.some((tw) => tw.padId === p.id));
+  return anyEmpty ? anyEmpty.id : null;
+}
+
+function renderTutorialCard(): void {
+  clearTutorialHighlights();
+  if (tutorialStep < 0 || !started || engine.gameOver || !overlayTitle.classList.contains('hidden')) {
+    tutorialCard.classList.add('hidden');
+    return;
+  }
+
+  const lang = engine.lang;
+  const stepNum = tutorialStep + 1;
+  tutStepBadge.textContent = `${stepNum} / 4`;
+  tutTitle.textContent = t(lang, `tut.s${stepNum}t`);
+  tutBody.textContent = t(lang, `tut.s${stepNum}b`);
+  tutDots.innerHTML = [0, 1, 2, 3]
+    .map((i) => `<span class="tut-dot${i < tutorialStep ? ' is-done' : i === tutorialStep ? ' is-current' : ''}"></span>`)
+    .join('');
+
+  if (tutorialStep === 0) {
+    ui.tutorialPadId = pickTutorialPadId();
+    btnTutNext.classList.add('hidden');
+  } else if (tutorialStep === 1) {
+    btnCallWave.classList.add('tut-highlight');
+    btnTutNext.classList.add('hidden');
+  } else if (tutorialStep === 2) {
+    heroPill.classList.add('tut-highlight');
+    btnTutNext.textContent = t(lang, 'tut.next');
+    btnTutNext.classList.remove('hidden');
+  } else {
+    btnSkillSteal.classList.add('tut-highlight');
+    btnTutNext.textContent = t(lang, 'tut.done');
+    btnTutNext.classList.remove('hidden');
+  }
+
+  tutorialCard.classList.remove('hidden');
+}
+
+function startTutorial(force = false): void {
+  if (!force && isTutorialCompleted()) {
+    tutorialStep = -1;
+    renderTutorialCard();
+    return;
+  }
+  if (engine.towers.length === 0) tutorialStep = 0;
+  else if (engine.waveIndex < 0) tutorialStep = 1;
+  else tutorialStep = 2;
+  renderTutorialCard();
+}
+
+function finishTutorial(showCompleteToast: boolean): void {
+  tutorialStep = -1;
+  markTutorialCompleted();
+  clearTutorialHighlights();
+  tutorialCard.classList.add('hidden');
+  if (showCompleteToast) {
+    showToast(t(engine.lang, 'tut.completeToast'), 'good', 'sparkles');
+  }
+}
+
+function notifyTutorialEvent(event: 'build' | 'wave' | 'hero' | 'skill'): void {
+  if (tutorialStep < 0) return;
+  if (tutorialStep === 0 && event === 'build') {
+    tutorialStep = 1;
+    renderTutorialCard();
+  } else if (tutorialStep === 1 && event === 'wave') {
+    tutorialStep = 2;
+    renderTutorialCard();
+  } else if (tutorialStep === 2 && event === 'hero') {
+    tutorialStep = 3;
+    renderTutorialCard();
+  } else if (tutorialStep === 3 && event === 'skill') {
+    finishTutorial(true);
+  }
 }
 
 function escapeHtml(str: string): string {
@@ -383,9 +565,7 @@ function detectInitialLang(): Lang {
   } catch {
     // ignore storage restrictions
   }
-  if (typeof navigator !== 'undefined' && navigator.language) {
-    return normalizeLang(navigator.language);
-  }
+  // Always default to English unless explicit ?lang= or saved user preference exists
   return 'en';
 }
 
@@ -712,14 +892,16 @@ function applyLanguage(): void {
     el.dir = meta.dir;
   }
 
-  selectLangHud.value = lang;
-  selectLangTitle.value = lang;
   hudLangCode.textContent = meta.short;
+  titleLangName.textContent = meta.name;
   const langLabel = t(lang, 'title.langLabel');
-  hudLangWrap.title = `${langLabel}: ${meta.name}`;
-  selectLangHud.setAttribute('aria-label', langLabel);
-  titleLangWrap.title = langLabel;
-  selectLangTitle.setAttribute('aria-label', langLabel);
+  btnLangHud.title = `${langLabel}: ${meta.name}`;
+  btnLangHud.setAttribute('aria-label', `${langLabel}: ${meta.name}`);
+  btnLangTitle.title = langLabel;
+  btnLangTitle.setAttribute('aria-label', `${langLabel}: ${meta.name}`);
+  if (!langPopover.classList.contains('hidden')) {
+    renderLangPopover();
+  }
   btnBackSite.href = `../?lang=${encodeURIComponent(lang)}`;
 
   document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
@@ -794,6 +976,7 @@ function applyLanguage(): void {
     renderResultModalContent(lastResultKind);
   }
   updateTargetingHint();
+  renderTutorialCard();
 }
 
 // ---- Visual Field Codex & Satirical Achievements Wall inside Help Modal ----
@@ -2204,7 +2387,10 @@ function renderRadialMenu(padId: string): void {
             triggerUnaffordableFeedback(btnEl, stat.cost - engine.gold);
             return;
           }
-          if (engine.buildTower(padId, sp.type)) closeRadialMenu();
+          if (engine.buildTower(padId, sp.type)) {
+            closeRadialMenu();
+            notifyTutorialEvent('build');
+          }
         },
       });
     }
@@ -2849,6 +3035,7 @@ canvas.addEventListener('pointerdown', (ev) => {
       closeRadialMenu();
       clearSelectedEntity();
       engine.callNextWave();
+      notifyTutorialEvent('wave');
       return;
     }
   }
@@ -2895,6 +3082,7 @@ canvas.addEventListener('pointerdown', (ev) => {
   clearSelectedEntity();
   inspectorCard.classList.add('hidden');
   engine.moveHeroTo(x, y);
+  notifyTutorialEvent('hero');
 });
 
 function pingAndInspectHero(): void {
@@ -2913,10 +3101,10 @@ function pingAndInspectHero(): void {
   showHeroInspector();
 }
 
-// Prevent pointerdown on HUD controls from bleeding to canvas
-for (const el of [hudTop, hudBottom]) {
+// Prevent pointerdown on HUD controls, tutorial coachmark & language popover from bleeding to canvas
+for (const el of [hudTop, hudBottom, tutorialCard, langPopover]) {
   el.addEventListener('pointerdown', (ev) => {
-    if (ev.target !== el) {
+    if (ev.target !== el || el === tutorialCard || el === langPopover) {
       lastUiPointerTs = performance.now();
     }
   });
@@ -3070,20 +3258,77 @@ function launchSelectedStage(): void {
   const welcomeTone =
     selectedStageId === 'furnace' ? 'purple' : selectedStageId === 'bridge' ? 'good' : 'info';
   const welcomeIco: IconName = STAGE_ICONS[selectedStageId] ?? 'trees';
-  showToast(t(engine.lang, `stage.${selectedStageId}.welcome`), welcomeTone, welcomeIco);
+  if (isTutorialCompleted()) {
+    showToast(t(engine.lang, `stage.${selectedStageId}.welcome`), welcomeTone, welcomeIco);
+  }
+  startTutorial(false);
 }
 
 document.getElementById('btn-start-game')!.addEventListener('click', () => {
+  closeLangPopover(false);
   launchSelectedStage();
 });
 
-selectLangTitle.addEventListener('change', () => {
-  void setLanguage(selectLangTitle.value, { persist: true, syncUrl: true });
+btnLangTitle.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  toggleLangPopover(btnLangTitle);
 });
 
-selectLangHud.addEventListener('change', () => {
-  void setLanguage(selectLangHud.value, { persist: true, syncUrl: true });
-  selectLangHud.blur();
+btnLangHud.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  lastUiPointerTs = performance.now();
+  toggleLangPopover(btnLangHud);
+});
+
+langPopover.addEventListener('click', (ev) => {
+  if (!(ev.target instanceof Element)) return;
+  const opt = ev.target.closest<HTMLButtonElement>('[data-lang]');
+  if (!opt) return;
+  ev.stopPropagation();
+  const code = opt.dataset.lang;
+  closeLangPopover(true);
+  if (code) void setLanguage(code, { persist: true, syncUrl: true });
+});
+
+document.addEventListener('click', (ev) => {
+  if (langPopover.classList.contains('hidden')) return;
+  if (
+    ev.target instanceof Node &&
+    (langPopover.contains(ev.target) || btnLangHud.contains(ev.target) || btnLangTitle.contains(ev.target))
+  ) {
+    return;
+  }
+  closeLangPopover(false);
+});
+
+window.addEventListener('resize', () => {
+  if (!langPopover.classList.contains('hidden') && langPopoverAnchor) {
+    positionLangPopover(langPopoverAnchor);
+  }
+});
+
+btnTutSkip.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  finishTutorial(false);
+});
+
+btnTutNext.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  if (tutorialStep === 2) {
+    tutorialStep = 3;
+    renderTutorialCard();
+  } else {
+    finishTutorial(true);
+  }
+});
+
+btnReplayTutorial.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  closeHelpModal();
+  if (!started) {
+    launchSelectedStage();
+  }
+  startTutorial(true);
 });
 
 btnSpeed.addEventListener('click', () => {
@@ -3149,6 +3394,7 @@ btnCallWave.addEventListener('click', () => {
   waveTooltipPinned = false;
   wavePreviewTooltip.classList.add('hidden');
   engine.callNextWave();
+  notifyTutorialEvent('wave');
 });
 
 btnSkillSteal.addEventListener('click', () => {
@@ -3156,6 +3402,7 @@ btnSkillSteal.addEventListener('click', () => {
   cancelTargeting();
   closeRadialMenu();
   engine.castStealTelemetry();
+  notifyTutorialEvent('skill');
 });
 
 btnSkillRug.addEventListener('click', () => {
@@ -3164,6 +3411,7 @@ btnSkillRug.addEventListener('click', () => {
   ui.targetingMode = ui.targetingMode === 'rug' ? 'none' : 'rug';
   updateTargetingHint();
   refreshHud();
+  notifyTutorialEvent('skill');
 });
 
 btnSkillDelete.addEventListener('click', () => {
@@ -3172,6 +3420,7 @@ btnSkillDelete.addEventListener('click', () => {
   ui.targetingMode = ui.targetingMode === 'delete' ? 'none' : 'delete';
   updateTargetingHint();
   refreshHud();
+  notifyTutorialEvent('skill');
 });
 
 btnSkillHero.addEventListener('click', () => {
@@ -3179,6 +3428,7 @@ btnSkillHero.addEventListener('click', () => {
   cancelTargeting();
   closeRadialMenu();
   engine.castRingLightApology();
+  notifyTutorialEvent('skill');
 });
 
 btnCopyReport.addEventListener('click', async () => {
@@ -3226,6 +3476,8 @@ btnStageSelect.addEventListener('click', () => {
   closeRadialMenu();
   cancelTargeting();
   clearSelectedEntity();
+  tutorialStep = -1;
+  renderTutorialCard();
   audioExt.stopBgm?.();
   lastAudioIntensity = 0;
   engine.setDifficulty(selectedDifficulty);
@@ -3250,7 +3502,11 @@ window.addEventListener('keydown', (ev) => {
   const key = ev.key;
   const lower = key.toLowerCase();
 
-  // Allow Escape to close Help/Achievements modal even on the Title screen
+  // Allow Escape to close custom Language Popover or Help modal even on the Title screen
+  if (key === 'Escape' && !langPopover.classList.contains('hidden')) {
+    closeLangPopover(true);
+    return;
+  }
   if (key === 'Escape' && !overlayHelp.classList.contains('hidden')) {
     closeHelpModal();
     return;
@@ -3353,7 +3609,6 @@ function frame(ts: number): void {
 }
 
 async function bootstrap(): Promise<void> {
-  populateLanguageSelects();
   hydrateStaticIcons();
   void assets.loadAll();
 
