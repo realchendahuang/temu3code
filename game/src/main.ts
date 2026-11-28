@@ -898,14 +898,20 @@ function applyLanguage(): void {
   renderStagePicker();
   updateTitleBestRecord();
 
+  const guideIcons: Array<{ ico: IconName; cls: string }> = [
+    { ico: 'briefcase', cls: 'ico-gold' },
+    { ico: 'sparkles', cls: 'ico-purple' },
+    { ico: 'swords', cls: 'ico-cyan' },
+  ];
   helpContent.innerHTML = [1, 2, 3]
-    .map(
-      (i) => `
+    .map((i) => {
+      const g = guideIcons[i - 1];
+      return `
       <div class="help-box">
-        <h3>${t(lang, `help.sec${i}t`)}</h3>
-        <p>${t(lang, `help.sec${i}b`)}</p>
-      </div>`
-    )
+        <h3><span class="help-box-ico ${g.cls}">${iconSvg(g.ico, { size: 15 })}</span><span>${escapeHtml(t(lang, `help.sec${i}t`))}</span></h3>
+        <p>${escapeHtml(t(lang, `help.sec${i}b`))}</p>
+      </div>`;
+    })
     .join('');
 
   const hotkeysList: Array<[string, string]> = [
@@ -918,12 +924,12 @@ function applyLanguage(): void {
     ['Esc', t(lang, 'hotkey.cancel')],
   ];
   helpHotkeys.innerHTML = `
-    <span class="hotkey-strip-label">${iconSvg('keyboard', { size: 13, className: 'ico-gold' })}<span>${t(lang, 'hotkey.title')}</span></span>
+    <span class="hotkey-strip-label">${iconSvg('keyboard', { size: 14, className: 'ico-gold' })}<span>${escapeHtml(t(lang, 'hotkey.title'))}</span></span>
     <div class="hotkey-list">
       ${hotkeysList
         .map(
           ([k, lbl]) =>
-            `<span class="hotkey-item"><kbd class="hotkey-kbd">${k}</kbd><span>${lbl}</span></span>`
+            `<span class="hotkey-item"><kbd class="hotkey-kbd">${k}</kbd><span>${escapeHtml(lbl)}</span></span>`
         )
         .join('')}
     </div>
@@ -1163,105 +1169,164 @@ function handleAchievementUnlocked(def: AchievementDef): void {
 
 function renderFieldCodex(): void {
   const lang = engine.lang;
-  const fortressCards: Array<{ img: string; name: string; badge: string; meta: string; desc: string; extra?: string }> = [
+
+  const coreCards: Array<{
+    img: string;
+    name: string;
+    badge: string;
+    warnPill?: string;
+    desc: string;
+    extra?: string;
+  }> = [
     {
       img: './assets/castle-t3.webp',
       name: t(lang, 'codex.castle.name'),
       badge: `${iconSvg('castle', { size: 12, className: 'ico-gold' })} 20 HP`,
-      meta: t(lang, 'codex.castle.meta'),
       desc: t(lang, 'codex.castle.desc'),
       extra: 'is-gold',
     },
     {
       img: './assets/hero-rage.webp',
       name: t(lang, 'codex.hero.name'),
-      badge: `${iconSvg('megaphone', { size: 12, className: 'ico-crimson' })} / ${iconSvg('briefcase', { size: 12, className: 'ico-gold' })}`,
-      meta: t(lang, 'codex.hero.meta'),
+      badge: `${iconSvg('megaphone', { size: 12, className: 'ico-crimson' })} / ${iconSvg('briefcase', { size: 12, className: 'ico-gold' })} Lv.5`,
       desc: t(lang, 'codex.hero.desc'),
     },
     {
       img: './assets/vip-exec.webp',
       name: t(lang, 'codex.vip.name'),
-      badge: `${iconSvg('coins', { size: 12, className: 'ico-gold' })} +$${VIP_PAYOUT} / +$${VIP_ESCORT_PAYOUT}`,
-      meta: `${iconSvg('alertTriangle', { size: 11, className: 'ico-crimson' })} ${t(lang, 'codex.vip.meta')}`,
+      badge: `${iconSvg('coins', { size: 12, className: 'ico-gold' })} +$${VIP_PAYOUT} / 2x`,
+      warnPill: `${iconSvg('alertTriangle', { size: 11, className: 'ico-crimson' })} ${escapeHtml(t(lang, 'hud.vipWarnShort'))}`,
       desc: t(lang, 'codex.vip.desc'),
       extra: 'is-gold',
     },
   ];
 
+  const coreHtml = `<div class="codex-grid codex-core-grid">${coreCards
+    .map(
+      (c) => `
+      <article class="codex-card codex-core-card ${c.extra ?? ''}">
+        <div class="codex-core-top">
+          <div class="codex-thumb">
+            <img src="${c.img}" alt="${escapeHtml(c.name)}" loading="eager" decoding="async" draggable="false" />
+          </div>
+          <div class="codex-core-head">
+            <span class="codex-name">${escapeHtml(c.name)}</span>
+            <div class="codex-core-badges">
+              <span class="codex-badge" dir="ltr">${c.badge}</span>
+              ${c.warnPill ? `<span class="codex-pill is-warn">${c.warnPill}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <p class="codex-desc">${escapeHtml(c.desc)}</p>
+      </article>`
+    )
+    .join('')}</div>`;
+
   const towerOrder: TowerBaseType[] = ['barracks', 'archer', 'mage', 'artillery'];
-  const towerCards = towerOrder.map((type) => {
-    const lv1 = TOWER_STATS[type].lv1;
-    const isArt = type === 'artillery';
-    const vipTag = isArt
-      ? `${iconSvg('alertTriangle', { size: 11, className: 'ico-crimson' })} ${t(lang, 'stat.vipAoe')}`
-      : `${iconSvg('briefcase', { size: 11, className: 'ico-gold' })} ${t(lang, 'stat.safeVip')}`;
-    const meta =
-      type === 'barracks'
-        ? `${iconSvg('heart', { size: 11, className: 'ico-crimson' })} ${lv1.guardHp} · ${iconSvg('swords', { size: 11, className: 'ico-amber' })} ${lv1.guardDamage} · ${vipTag}`
-        : `${iconSvg('swords', { size: 11, className: 'ico-amber' })} ${lv1.damage} · ${iconSvg('crosshair', { size: 11, className: 'ico-cyan' })} ${lv1.range} · ${vipTag}`;
-    return {
-      img: `./assets/tower-${type}.webp`,
-      name: getTowerTitle(lang, type, 'none'),
-      badge: `${lv1.cost}$`,
-      meta,
-      desc: `${getTowerDesc(lang, type, 'none')} ${t(lang, `codex.tower.${type}.evo`)}`,
-      extra: isArt ? 'is-boss' : '',
-    };
-  });
+  const towersHtml = `<div class="codex-grid">${towerOrder
+    .map((type) => {
+      const lv1 = TOWER_STATS[type].lv1;
+      const isArt = type === 'artillery';
+      const name = getTowerTitle(lang, type, 'none');
+      const desc = getTowerDesc(lang, type, 'none');
+      const brIcons = BRANCH_ICONS[type];
+      const nameA = getTowerTitle(lang, type, 'a');
+      const nameB = getTowerTitle(lang, type, 'b');
 
-  const enemyOrder: EnemyKind[] = ['dev', 'fork', 'auditor', 'veteran', 'gdpr'];
-  const enemyCards = enemyOrder.map((kind) => {
-    const arch = ENEMY_ARCHETYPES[kind];
-    const armPct = Math.round(arch.armor * 100);
-    const mrPct = Math.round(arch.magicResist * 100);
-    const meta = `${iconSvg('heart', { size: 11, className: 'ico-crimson' })} ${arch.hp} · ${iconSvg('gauge', { size: 11, className: 'ico-cyan' })} ${arch.speed} · ${iconSvg('shield', { size: 11, className: 'ico-slate' })} ${armPct}% · ${iconSvg('sparkles', { size: 11, className: 'ico-emerald' })} ${mrPct}%`;
-    return {
-      img: `./assets/enemy-${kind}.webp`,
-      name: t(lang, `enemy.${kind}.name`),
-      badge: arch.isBoss
-        ? `${iconSvg('crown', { size: 11, className: 'ico-gold' })} BOSS · +${arch.reward}$`
-        : `+${arch.reward}$ · -${arch.lifeCost}${iconSvg('shield', { size: 11, className: 'ico-crimson' })}`,
-      meta,
-      desc: t(lang, `enemy.${kind}.counter`),
-      extra: arch.isBoss ? 'is-boss' : '',
-    };
-  });
+      const keyStatPill =
+        type === 'barracks'
+          ? `<span class="codex-pill">${iconSvg('shield', { size: 11, className: 'ico-cyan' })} ${escapeHtml(getTowerTag(lang, type, 'none'))}</span>`
+          : `<span class="codex-pill">${iconSvg('swords', { size: 11, className: 'ico-amber' })} ${escapeHtml(t(lang, 'stat.dmg'))} <bdi dir="ltr">${lv1.damage}</bdi></span>`;
+      const vipPill = isArt
+        ? `<span class="codex-pill is-warn">${iconSvg('alertTriangle', { size: 11, className: 'ico-crimson' })} ${escapeHtml(t(lang, 'stat.vipAoe'))}</span>`
+        : `<span class="codex-pill is-safe">${iconSvg('briefcase', { size: 11, className: 'ico-gold' })} ${escapeHtml(t(lang, 'stat.safeVip'))}</span>`;
 
-  const renderGrid = (
-    cards: Array<{ img: string; name: string; badge: string; meta: string; desc: string; extra?: string }>
-  ) =>
-    `<div class="codex-grid">${cards
-      .map(
-        (c) => `
-      <div class="codex-card ${c.extra ?? ''}">
+      return `
+      <article class="codex-card codex-tower-card ${isArt ? 'is-boss' : ''}">
         <div class="codex-thumb">
-          <img src="${c.img}" alt="${c.name}" loading="eager" decoding="async" draggable="false" />
+          <img src="./assets/tower-${type}.webp" alt="${escapeHtml(name)}" loading="eager" decoding="async" draggable="false" />
         </div>
         <div class="codex-info">
           <div class="codex-head">
-            <span class="codex-name">${c.name}</span>
-            <span class="codex-badge" dir="ltr">${c.badge}</span>
+            <span class="codex-name">${escapeHtml(name)}</span>
+            <span class="codex-badge is-price" dir="ltr">$${lv1.cost}</span>
           </div>
-          <div class="codex-meta">${c.meta}</div>
-          <div class="codex-desc">${c.desc}</div>
+          <div class="codex-pills">
+            ${keyStatPill}
+            ${vipPill}
+          </div>
+          <p class="codex-desc">${escapeHtml(desc)}</p>
+          <div class="codex-branches">
+            <span class="codex-branch-kicker" dir="ltr">Lv.3</span>
+            <span class="codex-branch-tag">${iconSvg(brIcons.a.ico, { size: 11, className: brIcons.a.cls })}<span>${escapeHtml(nameA)}</span></span>
+            <span class="codex-branch-tag">${iconSvg(brIcons.b.ico, { size: 11, className: brIcons.b.cls })}<span>${escapeHtml(nameB)}</span></span>
+          </div>
         </div>
-      </div>`
-      )
-      .join('')}</div>`;
+      </article>`;
+    })
+    .join('')}</div>`;
+
+  const enemyOrder: EnemyKind[] = ['dev', 'fork', 'auditor', 'veteran', 'gdpr'];
+  const enemiesHtml = `<div class="codex-grid">${enemyOrder
+    .map((kind) => {
+      const arch = ENEMY_ARCHETYPES[kind];
+      const name = t(lang, `enemy.${kind}.name`);
+      const desc = t(lang, `enemy.${kind}.counter`);
+      const armPct = Math.round(arch.armor * 100);
+      const mrPct = Math.round(arch.magicResist * 100);
+
+      const pills: string[] = [
+        `<span class="codex-pill is-hp">${iconSvg('heart', { size: 11, className: 'ico-crimson' })} <bdi dir="ltr">${arch.hp}</bdi></span>`,
+      ];
+      if (arch.speed >= 70) {
+        pills.push(
+          `<span class="codex-pill is-speed">${iconSvg('gauge', { size: 11, className: 'ico-cyan' })} <bdi dir="ltr">${arch.speed}</bdi></span>`
+        );
+      }
+      if (arch.armor >= 0.25) {
+        pills.push(
+          `<span class="codex-pill is-armor">${iconSvg('shield', { size: 11, className: 'ico-slate' })} ${escapeHtml(t(lang, 'inspect.armor'))} <bdi dir="ltr">${armPct}%</bdi></span>`
+        );
+      }
+      if (arch.magicResist >= 0.25) {
+        pills.push(
+          `<span class="codex-pill is-mr">${iconSvg('sparkles', { size: 11, className: 'ico-emerald' })} ${escapeHtml(t(lang, 'inspect.mr'))} <bdi dir="ltr">${mrPct}%</bdi></span>`
+        );
+      }
+
+      const badge = arch.isBoss
+        ? `${iconSvg('crown', { size: 11, className: 'ico-gold' })} BOSS · +$${arch.reward}`
+        : `+$${arch.reward}`;
+
+      return `
+      <article class="codex-card codex-enemy-card ${arch.isBoss ? 'is-boss is-boss-wide' : ''}">
+        <div class="codex-thumb">
+          <img src="./assets/enemy-${kind}.webp" alt="${escapeHtml(name)}" loading="eager" decoding="async" draggable="false" />
+        </div>
+        <div class="codex-info">
+          <div class="codex-head">
+            <span class="codex-name">${escapeHtml(name)}</span>
+            <span class="codex-badge ${arch.isBoss ? 'is-boss-badge' : 'is-price'}" dir="ltr">${badge}</span>
+          </div>
+          <div class="codex-pills">${pills.join('')}</div>
+          <p class="codex-desc">${escapeHtml(desc)}</p>
+        </div>
+      </article>`;
+    })
+    .join('')}</div>`;
 
   codexContent.innerHTML = `
     <section class="codex-section">
-      <h3>${iconSvg('castle', { size: 14, className: 'ico-gold' })}<span>${t(lang, 'codex.secFortress')}</span></h3>
-      ${renderGrid(fortressCards)}
+      <h3>${iconSvg('castle', { size: 15, className: 'ico-gold' })}<span>${escapeHtml(t(lang, 'codex.secFortress'))}</span></h3>
+      ${coreHtml}
     </section>
     <section class="codex-section">
-      <h3>${iconSvg('swords', { size: 14, className: 'ico-cyan' })}<span>${t(lang, 'codex.secTowers')}</span></h3>
-      ${renderGrid(towerCards)}
+      <h3>${iconSvg('swords', { size: 15, className: 'ico-cyan' })}<span>${escapeHtml(t(lang, 'codex.secTowers'))}</span></h3>
+      ${towersHtml}
     </section>
     <section class="codex-section">
-      <h3>${iconSvg('bug', { size: 14, className: 'ico-crimson' })}<span>${t(lang, 'codex.secEnemies')}</span></h3>
-      ${renderGrid(enemyCards)}
+      <h3>${iconSvg('bug', { size: 15, className: 'ico-crimson' })}<span>${escapeHtml(t(lang, 'codex.secEnemies'))}</span></h3>
+      ${enemiesHtml}
     </section>
   `;
 }
@@ -1783,7 +1848,7 @@ function showInspector(
           .map((c) => `<span class="stat-chip ${c.cls ?? ''}">${c.text}</span>`)
           .join('')}</div>`
       : '';
-  const costHtml = costBadge ? `<span class="insp-cost">${costBadge}</span>` : '';
+  const costHtml = costBadge ? `<span class="insp-cost" dir="ltr">${costBadge}</span>` : '';
   inspectorCard.classList.remove('insp-mode-enemy', 'insp-mode-vip');
   inspectorCard.innerHTML = `<div class="insp-head"><h4>${title}</h4>${costHtml}</div>${chipsHtml}<p>${desc}</p>`;
   inspectorCard.classList.toggle('dock-left', dock === 'left');
@@ -1914,7 +1979,7 @@ function renderTowerInspector(tower: Tower, dock: 'left' | 'right', costBadge = 
           .map((c) => `<span class="stat-chip ${c.cls ?? ''}">${c.text}</span>`)
           .join('')}</div>`
       : '';
-  const costHtml = costBadge ? `<span class="insp-cost">${costBadge}</span>` : '';
+  const costHtml = costBadge ? `<span class="insp-cost" dir="ltr">${costBadge}</span>` : '';
 
   let prioHtml = '';
   if (tower.type !== 'barracks') {
@@ -1939,7 +2004,7 @@ function renderTowerInspector(tower: Tower, dock: 'left' | 'right', costBadge = 
       <span class="insp-cs-item insp-cs-kills">${iconSvg('swords', { size: 12, className: 'ico-crimson' })} <span class="insp-cs-lbl">${t(lang, 'inspect.kills')}</span> <strong class="insp-cs-val" data-field="kills">${kills}</strong></span>
       <span class="insp-cs-sep" aria-hidden="true">·</span>
       <span class="insp-cs-item insp-cs-dmg">${iconSvg('zap', { size: 12, className: 'ico-cyan' })} <span class="insp-cs-lbl">${t(lang, 'inspect.totalDmg')}</span> <strong class="insp-cs-val" data-field="dmg">${totalDmg}</strong></span>
-      <span class="insp-cs-gold-wrap${goldEarned > 0 ? '' : ' hidden'}"><span class="insp-cs-sep" aria-hidden="true">·</span><span class="insp-cs-item insp-cs-gold">${iconSvg('coins', { size: 12, className: 'ico-gold' })} <span class="insp-cs-lbl">${t(lang, 'inspect.goldEarned')}</span> <strong class="insp-cs-val" data-field="gold">+${goldEarned}$</strong></span></span>
+      <span class="insp-cs-gold-wrap${goldEarned > 0 ? '' : ' hidden'}"><span class="insp-cs-sep" aria-hidden="true">·</span><span class="insp-cs-item insp-cs-gold">${iconSvg('coins', { size: 12, className: 'ico-gold' })} <span class="insp-cs-lbl">${t(lang, 'inspect.goldEarned')}</span> <strong class="insp-cs-val" data-field="gold">+$${goldEarned}</strong></span></span>
     </div>
   `;
 
@@ -1976,7 +2041,7 @@ function refreshSelectedTowerCombatStats(): void {
     goldWrap.classList.toggle('hidden', goldEarned <= 0);
   }
   if (goldEl && goldEarned > 0) {
-    const goldStr = `+${goldEarned}$`;
+    const goldStr = `+$${goldEarned}`;
     if (goldEl.textContent !== goldStr) goldEl.textContent = goldStr;
   }
 }
@@ -2089,20 +2154,25 @@ function renderEnemyInspector(enemy: Enemy): void {
   const armorPct = Math.round(enemy.armor * 100);
   const mrPct = Math.round(enemy.magicResist * 100);
 
-  const chips: Array<{ text: string; cls?: string }> = [
-    { text: `${iconSvg('shield', { size: 12 })} ${t(lang, 'inspect.armor')} <bdi dir="ltr">${armorPct}%</bdi>`, cls: armorPct >= 35 ? 'chip-armor' : '' },
-    { text: `${iconSvg('sparkles', { size: 12 })} ${t(lang, 'inspect.mr')} <bdi dir="ltr">${mrPct}%</bdi>`, cls: mrPct >= 35 ? 'chip-mr' : '' },
+  const chips: Array<{ text: string; cls?: string }> = [];
+  if (armorPct >= 25) {
+    chips.push({ text: `${iconSvg('shield', { size: 12 })} ${t(lang, 'inspect.armor')} <bdi dir="ltr">${armorPct}%</bdi>`, cls: 'chip-armor' });
+  }
+  if (mrPct >= 25) {
+    chips.push({ text: `${iconSvg('sparkles', { size: 12 })} ${t(lang, 'inspect.mr')} <bdi dir="ltr">${mrPct}%</bdi>`, cls: 'chip-mr' });
+  }
+  chips.push(
     { text: `${iconSvg('gauge', { size: 12 })} ${t(lang, 'inspect.speed')} <bdi dir="ltr">${Math.round(enemy.baseSpeed)}</bdi>`, cls: enemy.baseSpeed >= 70 ? 'chip-speed' : '' },
-    { text: `${iconSvg('heart', { size: 12, className: 'ico-crimson' })} ${t(lang, 'inspect.lifeCost')} <bdi dir="ltr">-${enemy.lifeCost}</bdi>` },
-  ];
+    { text: `${iconSvg('heart', { size: 12, className: 'ico-crimson' })} ${t(lang, 'inspect.lifeCost')} <bdi dir="ltr">-${enemy.lifeCost}</bdi>` }
+  );
 
   if (enemy.enraged) chips.push({ text: `${iconSvg('flame', { size: 12, className: 'ico-amber' })} ${t(lang, 'inspect.statusEnraged')}`, cls: 'chip-status' });
   if (enemy.stunTimer > 0) chips.push({ text: `${iconSvg('zap', { size: 12, className: 'ico-purple' })} ${t(lang, 'inspect.statusStunned')}`, cls: 'chip-special' });
   if (enemy.slowTimer > 0) chips.push({ text: `${iconSvg('snowflake', { size: 12, className: 'ico-cyan' })} ${t(lang, 'inspect.statusSlowed')}`, cls: 'chip-speed' });
 
   const badge = enemy.isBoss
-    ? `${iconSvg('crown', { size: 12, className: 'ico-gold' })} +${enemy.reward}$`
-    : `+${enemy.reward}$`;
+    ? `${iconSvg('crown', { size: 12, className: 'ico-gold' })} +$${enemy.reward}`
+    : `+$${enemy.reward}`;
   const dock: 'left' | 'right' = enemy.x > LOGICAL_W * 0.52 ? 'left' : 'right';
 
   renderEntityInspectorCard(
@@ -2131,7 +2201,7 @@ function renderVipInspector(vip: VipUnit): void {
     isEscorted
       ? { text: `${iconSvg('briefcase', { size: 12, className: 'ico-gold' })} ${t(lang, 'inspect.vipEscorted', { g: livePayout })}`, cls: 'chip-vip-safe' }
       : { text: `${iconSvg('briefcase', { size: 12, className: 'ico-gold' })} ${t(lang, 'inspect.vipSolo', { g: livePayout })}`, cls: 'chip-vip-safe' },
-    { text: `${iconSvg('gauge', { size: 12 })} ${t(lang, 'inspect.speed')} ${Math.round(vip.baseSpeed)}`, cls: 'chip-speed' },
+    { text: `${iconSvg('gauge', { size: 12 })} ${t(lang, 'inspect.speed')} <bdi dir="ltr">${Math.round(vip.baseSpeed)}</bdi>`, cls: 'chip-speed' },
     { text: `${iconSvg('alertTriangle', { size: 12, className: 'ico-crimson' })} ${t(lang, 'stat.vipAoe')}`, cls: 'chip-vip-warn' },
   ];
   if (vip.fleeing) {
@@ -2152,7 +2222,7 @@ function renderVipInspector(vip: VipUnit): void {
     vip.id,
     './assets/vip-exec.webp',
     t(lang, 'enemy.vip.name'),
-    `+${livePayout}$`,
+    `+$${livePayout}`,
     progressPct,
     t(lang, 'inspect.progress', { p: progressPct }),
     chips,
@@ -2346,15 +2416,15 @@ function renderRadialMenu(padId: string): void {
         dy: sp.dy * scale,
         ico: sp.ico,
         label: title,
-        costText: `${stat.cost}$`,
+        costText: `$${stat.cost}`,
         cost: stat.cost,
         unaffordable: engine.gold < stat.cost,
         extraClass: sp.type === 'artillery' ? 'artillery-warn' : '',
         previewRange,
-        onInspect: () => showInspector(title, desc, chips, `${stat.cost}$`, dock),
+        onInspect: () => showInspector(title, desc, chips, `$${stat.cost}`, dock),
         onClick: (btnEl) => {
           if (engine.gold < stat.cost) {
-            showInspector(title, desc, chips, `${stat.cost}$`, dock);
+            showInspector(title, desc, chips, `$${stat.cost}`, dock);
             triggerUnaffordableFeedback(btnEl, stat.cost - engine.gold);
             return;
           }
@@ -2388,7 +2458,7 @@ function renderRadialMenu(padId: string): void {
         dy: pos.dy * scale,
         ico: iconSvg('arrowUp', { size: 17, className: 'ico-gold', strokeWidth: 2.4 }),
         label: `${t(engine.lang, 'ui.upgrade')} Lv.2`,
-        costText: `${st.cost}$`,
+        costText: `$${st.cost}`,
         cost: st.cost,
         unaffordable: engine.gold < st.cost,
         extraClass: existing.type === 'artillery' ? 'artillery-warn' : '',
@@ -2399,10 +2469,10 @@ function renderRadialMenu(padId: string): void {
           splashRadius: st.splashRadius,
           isArtillery: existing.type === 'artillery',
         },
-        onInspect: () => showInspector(`${title} → Lv.2`, desc, upgChips, `${st.cost}$`, dock),
+        onInspect: () => showInspector(`${title} → Lv.2`, desc, upgChips, `$${st.cost}`, dock),
         onClick: (btnEl) => {
           if (engine.gold < st.cost) {
-            showInspector(`${title} → Lv.2`, desc, upgChips, `${st.cost}$`, dock);
+            showInspector(`${title} → Lv.2`, desc, upgChips, `$${st.cost}`, dock);
             triggerUnaffordableFeedback(btnEl, st.cost - engine.gold);
             return;
           }
@@ -2427,7 +2497,7 @@ function renderRadialMenu(padId: string): void {
         dy: posA.dy * scale,
         ico: iconSvg(brIcons.a.ico, { size: 17, className: brIcons.a.cls }),
         label: nameA,
-        costText: `${stA.cost}$`,
+        costText: `$${stA.cost}`,
         cost: stA.cost,
         unaffordable: engine.gold < stA.cost,
         extraClass: existing.type === 'artillery' ? 'artillery-warn' : '',
@@ -2438,10 +2508,10 @@ function renderRadialMenu(padId: string): void {
           splashRadius: stA.splashRadius,
           isArtillery: existing.type === 'artillery',
         },
-        onInspect: () => showInspector(nameA, descA, chipsA, `${stA.cost}$`, dock),
+        onInspect: () => showInspector(nameA, descA, chipsA, `$${stA.cost}`, dock),
         onClick: (btnEl) => {
           if (engine.gold < stA.cost) {
-            showInspector(nameA, descA, chipsA, `${stA.cost}$`, dock);
+            showInspector(nameA, descA, chipsA, `$${stA.cost}`, dock);
             triggerUnaffordableFeedback(btnEl, stA.cost - engine.gold);
             return;
           }
@@ -2453,7 +2523,7 @@ function renderRadialMenu(padId: string): void {
         dy: posB.dy * scale,
         ico: iconSvg(brIcons.b.ico, { size: 17, className: brIcons.b.cls }),
         label: nameB,
-        costText: `${stB.cost}$`,
+        costText: `$${stB.cost}`,
         cost: stB.cost,
         unaffordable: engine.gold < stB.cost,
         extraClass: existing.type === 'artillery' ? 'artillery-warn' : '',
@@ -2464,10 +2534,10 @@ function renderRadialMenu(padId: string): void {
           splashRadius: stB.splashRadius,
           isArtillery: existing.type === 'artillery',
         },
-        onInspect: () => showInspector(nameB, descB, chipsB, `${stB.cost}$`, dock),
+        onInspect: () => showInspector(nameB, descB, chipsB, `$${stB.cost}`, dock),
         onClick: (btnEl) => {
           if (engine.gold < stB.cost) {
-            showInspector(nameB, descB, chipsB, `${stB.cost}$`, dock);
+            showInspector(nameB, descB, chipsB, `$${stB.cost}`, dock);
             triggerUnaffordableFeedback(btnEl, stB.cost - engine.gold);
             return;
           }
@@ -2565,11 +2635,11 @@ function renderRadialMenu(padId: string): void {
       dy: posSell.dy * scale,
       ico: iconSvg('coins', { size: 17, className: 'ico-gold' }),
       label: t(engine.lang, 'ui.sell'),
-      costText: `+${refund}$`,
+      costText: `+$${refund}`,
       unaffordable: false,
       extraClass: 'sell-btn',
       previewRange: null,
-      onInspect: () => showInspector(`${t(engine.lang, 'ui.sell')} (+${refund}$)`, title, [], `+${refund}$`, dock),
+      onInspect: () => showInspector(`${t(engine.lang, 'ui.sell')} (+$${refund})`, title, [], `+$${refund}`, dock),
       onClick: () => {
         if (engine.sellTower(existing.id)) closeRadialMenu();
       },
@@ -2839,7 +2909,7 @@ function renderResultModalContent(kind: 'victory' | 'defeat' | 'endless_over'): 
     [String(s.enemiesBlocked), t(lang, 'metric.blocked')],
     [String(s.vipsEscorted), t(lang, 'metric.vips')],
     [String(s.vipsScared), t(lang, 'metric.vipHit')],
-    [`+${s.goldStolen}$`, t(lang, 'metric.stolen')],
+    [`+$${s.goldStolen}`, t(lang, 'metric.stolen')],
     [String(s.rugsBurst), t(lang, 'metric.rugs')],
     [String(s.deletesDropped), t(lang, 'metric.deletes')],
   ];
